@@ -125,13 +125,18 @@ function getFavorites() {
 
 function toggleFavorite(id) {
     let f = getFavorites();
+    let added;
     if (f.includes(id)) {
         f = f.filter(x => x !== id);
+        added = false;
     } else {
         f.push(id);
+        added = true;
     }
     localStorage.setItem("favs", JSON.stringify(f));
+    return added;
 }
+
 
 function isFavorite(id) {
     return getFavorites().includes(id);

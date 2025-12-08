@@ -53,6 +53,7 @@
 
     <main class="page container">
       <h1>Your Favorites</h1>
+
       <div id="favorites-grid" class="card-grid" style="margin-top: 20px"></div>
       <div id="fav-msg" style="color: var(--muted); margin-top: 14px"></div>
     </main>
@@ -66,12 +67,13 @@
     <script src="assets/js/app.js"></script>
 
     <script>
-      (async () => {
+      async function renderFavorites() {
         const grid = document.getElementById("favorites-grid");
         const msg = document.getElementById("fav-msg");
-        let favs = getFavorites();
+        const favs = getFavorites();
 
         if (!favs.length) {
+          grid.innerHTML = "";
           msg.textContent = "No favorites added yet.";
           return;
         }
@@ -81,16 +83,38 @@
         const details = await Promise.all(
           favs.map((id) => fetchAnimeBasic(id).catch(() => null))
         );
+
         const items = details.filter(Boolean);
 
-        if (!items.length) {
-          msg.textContent = "Could not load favorites (API rate limit).";
-          return;
-        }
-
         msg.textContent = "";
-        renderGrid(grid, items);
-      })();
+
+        grid.innerHTML = items
+          .map(
+            (it) => `
+          <div class="fav-card">
+            <a href="anime.html?id=${it.mal_id}" class="fav-link">
+              <img src="${it.images?.jpg?.image_url}" class="poster"/>
+              <div class="card-title">${esc(it.title)}</div>
+              <div class="card-meta">⭐ ${it.score || "N/A"}</div>
+            </a>
+
+            <button class="remove-btn"
+                onclick="removeFavorite(${it.mal_id})">
+              ✖
+            </button>
+          </div>
+        `
+          )
+          .join("");
+      }
+
+      function removeFavorite(id) {
+        let favs = getFavorites().filter((x) => x !== id);
+        localStorage.setItem("favs", JSON.stringify(favs));
+        renderFavorites(); // refresh without reloading page
+      }
+
+      renderFavorites();
     </script>
   </body>
 </html>

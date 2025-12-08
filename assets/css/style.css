@@ -585,3 +585,57 @@ body {
   color: var(--muted);
   margin-top: 3px;
 }
+
+.favorite-active {
+  background: var(--accent);
+  color: #000;
+}
+
+.remove-fav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  font-size: 1rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.fav-card {
+  position: relative;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: var(--shadow-lg);
+  transition: 0.2s;
+}
+
+.fav-card:hover {
+  transform: translateY(-4px);
+}
+
+.fav-link {
+  text-decoration: none;
+  color: var(--text);
+}
+
+.remove-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.remove-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
