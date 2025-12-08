@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Anime Details — AnimeVerse</title>
+
     <link rel="stylesheet" href="assets/css/reset.css" />
     <link rel="stylesheet" href="assets/css/style.css" />
   </head>
@@ -55,7 +56,7 @@
       </header>
     </div>
 
-    <!-- PAGE -->
+    <!-- PAGE CONTENT -->
     <main class="page container" id="content">
       <div style="padding: 40px; color: var(--muted)">Loading…</div>
     </main>
@@ -91,55 +92,99 @@
         const episodes = data.episodes || "—";
         const synopsis = data.synopsis || "No synopsis available.";
 
-        /* Create dynamic favorite button state */
-        function favButtonHTML() {
+        function renderFavBtn() {
           const added = isFavorite(data.mal_id);
           return `
-            <button class="btn ${added ? "favorite-active" : ""}" 
-                    id="fav-btn"
+            <button id="fav-btn"
+                    class="btn ${added ? "favorite-active" : ""}"
                     style="margin-top:14px;width:100%">
               ${
                 added
                   ? "❤️ Added to Favorites (click to remove)"
                   : "🤍 Add to Favorites"
               }
-            </button>
-          `;
+            </button>`;
         }
 
+        /* Inject the layout */
         root.innerHTML = `
-        <div style="display:grid;grid-template-columns:320px 1fr;gap:24px">
-          
-          <div>
-            <img src="${img}" style="width:100%;border-radius:12px;box-shadow:var(--shadow-lg)"/>
+          <div class="anime-details-grid">
+            
+            <div>
+              <img src="${img}" class="poster-lg"/>
 
-            ${favButtonHTML()}
-
-            <a class="btn secondary" style="margin-top:8px;display:block;text-align:center"
-               href="https://myanimelist.net/anime/${
-                 data.mal_id
-               }" target="_blank">
-               View on MAL
-            </a>
-          </div>
-
-          <div>
-            <h1 style="margin-bottom:10px">${esc(title)}</h1>
-
-            <div style="color:var(--muted);margin-bottom:12px">
-              ⭐ Score: <b style="color:var(--accent)">${score}</b> • Episodes: ${episodes}
+              <div class="details-buttons">
+                ${renderFavBtn()}
+                <a class="btn secondary"
+                   href="https://myanimelist.net/anime/${data.mal_id}"
+                   target="_blank">
+                   View on MAL
+                </a>
+              </div>
             </div>
 
-            <h3>Synopsis</h3>
-            <p style="color:var(--muted);line-height:1.6;margin-top:6px">${esc(
-              synopsis
-            )}</p>
+            <div class="anime-details-text">
+  <h1>${esc(title)}</h1>
+
+  <div class="meta-block">
+    ⭐ <b>${score}</b>  
+    • Episodes: ${episodes}  
+    • Type: ${data.type || "—"}  
+    • Status: ${data.status || "—"}  
+  </div>
+
+  <div class="meta-list">
+
+    <div><b>Japanese:</b> ${esc(data.title_japanese || "—")}</div>
+    <div><b>English:</b> ${esc(data.title_english || "—")}</div>
+
+    <div><b>Season:</b> ${
+      data.season ? data.season + " " + data.year : "—"
+    }</div>
+
+    <div><b>Duration:</b> ${data.duration || "—"}</div>
+    <div><b>Rating:</b> ${data.rating || "—"}</div>
+
+    <div><b>Studios:</b> 
+      ${data.studios?.map((s) => esc(s.name)).join(", ") || "—"}
+    </div>
+
+    <div><b>Producers:</b> 
+      ${data.producers?.map((p) => esc(p.name)).join(", ") || "—"}
+    </div>
+
+    <div><b>Genres:</b> 
+      ${data.genres?.map((g) => esc(g.name)).join(", ") || "—"}
+    </div>
+
+    <div><b>Rank:</b> ${data.rank || "—"}</div>
+    <div><b>Popularity:</b> ${data.popularity || "—"}</div>
+    <div><b>Favorites:</b> ${data.favorites || "—"}</div>
+  </div>
+
+  <h3 style="margin-top:20px">Synopsis</h3>
+  <p style="color:var(--muted);line-height:1.6;margin-top:6px">
+    ${esc(synopsis)}
+  </p>
+
+  ${
+    data.trailer?.url
+      ? `
+    <div class="trailer-box">
+      <h3>Trailer</h3>
+      <iframe src="${data.trailer.embed_url}" 
+              class="trailer-frame"
+              allowfullscreen></iframe>
+    </div>`
+      : ""
+  }
+</div>
+
+
           </div>
+        `;
 
-        </div>
-      `;
-
-        /* Attach favorite toggle behavior */
+        /* Button toggle handler */
         const favBtn = document.getElementById("fav-btn");
 
         favBtn.onclick = () => {

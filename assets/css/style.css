@@ -639,3 +639,67 @@ body {
 .remove-btn:hover {
   background: rgba(255, 255, 255, 0.25);
 }
+
+
+/* ============================================================
+   ANIME DETAILS PAGE — RESPONSIVE FIXES
+============================================================ */
+
+.anime-details-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 32px;
+  align-items: start;
+  margin-top: 40px;
+}
+
+/* Poster */
+.anime-details-grid img.poster-lg {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Buttons under poster */
+.details-buttons {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 900px) {
+  .anime-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .anime-details-grid img.poster-lg {
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .details-buttons {
+    max-width: 360px;
+    margin: 12px auto 0;
+  }
+
+  .anime-details-text {
+    margin-top: 20px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .anime-details-grid img.poster-lg {
+    max-width: 260px;
+  }
+
+  .details-buttons .btn {
+    width: 100%;
+  }
+
+  .anime-details-text h1 {
+    font-size: 1.6rem;
+  }
+}
