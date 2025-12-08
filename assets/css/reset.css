@@ -1,24 +1,62 @@
-/* reset.css */
-* {
+/* ============================================================
+   RESET.CSS — Clean, Modern, Mobile-Safe Reset
+   ============================================================ */
+
+/* Remove default margins, padding, and enable modern box model */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
+/* Document defaults */
 html,
 body {
   width: 100%;
   height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
-img {
+
+/* Prevent images from blowing up layout */
+img,
+picture,
+video,
+canvas {
   display: block;
   max-width: 100%;
 }
+
+/* Remove tap highlight on mobile for a cleaner UI */
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Typography inheritance */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Links are unstyled by default */
 a {
   text-decoration: none;
   color: inherit;
 }
-button,
-input,
+
+/* Remove ugly default button styles on some browsers */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Remove textarea resize by default (optional for UI consistency) */
 textarea {
-  font-family: inherit;
+  resize: none;
 }

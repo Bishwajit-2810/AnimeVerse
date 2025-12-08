@@ -21,11 +21,11 @@
 
         <!-- NAV MENU -->
         <nav class="nav" id="main-nav" aria-label="Main navigation">
-          <a href="index.html" class="active">Home</a>
+          <a href="index.html">Home</a>
           <a href="trending.html">Trending</a>
           <a href="genres.html">Genres</a>
           <a href="favorites.html">Favorites</a>
-          <a href="about.html">About</a>
+          <a href="about.html" class="active">About</a>
         </nav>
 
         <!-- RIGHT: SEARCH + THEME -->
@@ -72,28 +72,94 @@
         </div>
       </header>
     </div>
-
-    <main class="page container">
-      <h1>About AnimeVerse</h1>
-      <p
-        style="
-          color: var(--muted);
-          font-size: 1.1rem;
-          margin-top: 12px;
-          line-height: 1.6;
-        "
-      >
-        AnimeVerse is a front-end demo built with HTML, CSS, JS, and the Jikan
-        API. It features a cinematic hero carousel, advanced search, favorites,
-        genres, and responsive anime browsing UI inspired by modern manga-reader
-        design.
+    <div style="padding: 16px"></div>
+    <!-- ABOUT SECTION -->
+    <section class="section container about-section">
+      <h1 class="about-title">About the Team</h1>
+      <p class="about-subtitle">
+        This project was created by dedicated students who contributed design,
+        development, research, and creativity to bring AnimeVerse to life.
       </p>
-    </main>
 
+      <h2 class="team-header">Contributors</h2>
+
+      <div class="team-grid">
+        <div class="team-card">
+          <h3 class="team-name">Imran Mehedi Nabil</h3>
+          <p class="team-id">ID: 0242220005101485</p>
+          <p class="team-email">
+            <i data-feather="mail"></i> nabil2205101485@diu.edu.bd
+          </p>
+        </div>
+
+        <div class="team-card">
+          <h3 class="team-name">Abdul Ahad</h3>
+          <p class="team-id">ID: 0242220005101478</p>
+          <p class="team-email">
+            <i data-feather="mail"></i> ahad22205101478@gmail.com
+          </p>
+        </div>
+
+        <div class="team-card">
+          <h3 class="team-name">Ayshi Jahan Asha</h3>
+          <p class="team-id">ID: 221-15-5454</p>
+          <p class="team-email">
+            <i data-feather="mail"></i> ayshijahanasha@gmail.com
+          </p>
+        </div>
+
+        <div class="team-card">
+          <h3 class="team-name">Tasnova Toj Tasrifa</h3>
+          <p class="team-id">ID: 0242220005101954</p>
+          <p class="team-email">
+            <i data-feather="mail"></i> tasrifa22205101954@gmail.com
+          </p>
+        </div>
+      </div>
+
+      <!-- SPECIAL HONOR SECTION -->
+      <h2 class="honor-title">Special Honor</h2>
+
+      <div class="honor-card">
+        <h3 class="team-name special">Bishwajit Chakraborty</h3>
+        <p class="team-id">ID: 0242220005101414</p>
+        <p class="team-email">
+          <i data-feather="mail"></i> bishwajit2810@gmail.com
+        </p>
+
+        <div class="honor-links">
+          <a href="https://github.com/Bishwajit-2810" target="_blank">
+            <i data-feather="github"></i> GitHub
+          </a>
+          <a
+            href="https://www.linkedin.com/in/bishwajit-chakraborty/"
+            target="_blank"
+          >
+            <i data-feather="linkedin"></i> LinkedIn
+          </a>
+        </div>
+
+        <p class="honor-desc">
+          Recognized for exceptional effort, relentless debugging, UI
+          refinement, and continuous improvement of AnimeVerse. Your
+          contribution, patience, and commitment pushed the project beyond
+          expectations.
+        </p>
+      </div>
+    </section>
+
+    <!-- FEATHER ICONS -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>
+      feather.replace();
+    </script>
+
+    <!-- FOOTER -->
     <footer class="footer container">
       <p style="color: var(--muted)">© AnimeVerse</p>
     </footer>
 
+    <!-- Scripts -->
     <script src="assets/js/api.js"></script>
     <script src="assets/js/theme.js"></script>
     <script src="assets/js/app.js"></script>

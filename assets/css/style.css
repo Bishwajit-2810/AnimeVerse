@@ -770,3 +770,94 @@ body {
     display: flex;
   }
 }
+
+.about-section {
+  padding: 40px 0;
+}
+
+.about-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.about-subtitle {
+  color: var(--muted);
+  margin-bottom: 30px;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.team-header,
+.honor-title {
+  margin-top: 30px;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.team-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.team-card,
+.honor-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: var(--shadow-md);
+}
+.honor-card {
+  margin-top: 5px;
+}
+.team-name {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.team-id {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.team-email i {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.special {
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+
+.honor-links {
+  display: flex;
+  gap: 16px;
+  margin: 12px 0;
+}
+
+.honor-links a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.honor-links i {
+  width: 18px;
+  height: 18px;
+}
+
+.honor-desc {
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 8px;
+}

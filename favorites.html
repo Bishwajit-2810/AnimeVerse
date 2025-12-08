@@ -13,18 +13,18 @@
     <!-- HEADER -->
     <div class="header-wrap">
       <header class="header container">
-        <!-- LEFT: BRAND + MOBILE MENU BUTTON -->
+        <!-- LEFT: BRAND + MOBILE MENU -->
         <div style="display: flex; align-items: center; gap: 12px">
           <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
           <div class="brand"><span class="logo"></span> AnimeVerse</div>
         </div>
 
-        <!-- NAV MENU -->
+        <!-- NAV MENU (Fixed active link) -->
         <nav class="nav" id="main-nav" aria-label="Main navigation">
-          <a href="index.html" class="active">Home</a>
+          <a href="index.html">Home</a>
           <a href="trending.html">Trending</a>
           <a href="genres.html">Genres</a>
-          <a href="favorites.html">Favorites</a>
+          <a href="favorites.html" class="active">Favorites</a>
           <a href="about.html">About</a>
         </nav>
 
@@ -73,6 +73,7 @@
       </header>
     </div>
 
+    <!-- PAGE CONTENT -->
     <main class="page container">
       <h1>Your Favorites</h1>
 
@@ -80,10 +81,12 @@
       <div id="fav-msg" style="color: var(--muted); margin-top: 14px"></div>
     </main>
 
+    <!-- FOOTER -->
     <footer class="footer container">
       <p style="color: var(--muted)">© AnimeVerse</p>
     </footer>
 
+    <!-- SCRIPTS -->
     <script src="assets/js/api.js"></script>
     <script src="assets/js/theme.js"></script>
     <script src="assets/js/app.js"></script>
@@ -92,8 +95,10 @@
       async function renderFavorites() {
         const grid = document.getElementById("favorites-grid");
         const msg = document.getElementById("fav-msg");
+
         const favs = getFavorites();
 
+        /* Empty state */
         if (!favs.length) {
           grid.innerHTML = "";
           msg.textContent = "No favorites added yet.";
@@ -102,26 +107,27 @@
 
         msg.textContent = "Loading your favorites…";
 
+        /* Fetch details for each ID */
         const details = await Promise.all(
           favs.map((id) => fetchAnimeBasic(id).catch(() => null))
         );
 
         const items = details.filter(Boolean);
-
         msg.textContent = "";
 
+        /* Render cards */
         grid.innerHTML = items
           .map(
             (it) => `
           <div class="fav-card">
+            
             <a href="anime.html?id=${it.mal_id}" class="fav-link">
-              <img src="${it.images?.jpg?.image_url}" class="poster"/>
+              <img src="${it.images?.jpg?.image_url}" class="poster" />
               <div class="card-title">${esc(it.title)}</div>
               <div class="card-meta">⭐ ${it.score || "N/A"}</div>
             </a>
 
-            <button class="remove-btn"
-                onclick="removeFavorite(${it.mal_id})">
+            <button class="remove-btn" onclick="removeFavorite(${it.mal_id})">
               ✖
             </button>
           </div>
@@ -130,12 +136,14 @@
           .join("");
       }
 
+      /* Remove & refresh */
       function removeFavorite(id) {
-        let favs = getFavorites().filter((x) => x !== id);
-        localStorage.setItem("favs", JSON.stringify(favs));
-        renderFavorites(); // refresh without reloading page
+        const updated = getFavorites().filter((x) => x !== id);
+        localStorage.setItem("favs", JSON.stringify(updated));
+        renderFavorites();
       }
 
+      /* Initial load */
       renderFavorites();
     </script>
   </body>

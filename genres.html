@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Genres — AnimeVerse</title>
+
     <link rel="stylesheet" href="assets/css/reset.css" />
     <link rel="stylesheet" href="assets/css/style.css" />
   </head>
@@ -20,14 +21,14 @@
 
         <!-- NAV MENU -->
         <nav class="nav" id="main-nav" aria-label="Main navigation">
-          <a href="index.html" class="active">Home</a>
+          <a href="index.html">Home</a>
           <a href="trending.html">Trending</a>
-          <a href="genres.html">Genres</a>
+          <a href="genres.html" class="active">Genres</a>
           <a href="favorites.html">Favorites</a>
           <a href="about.html">About</a>
         </nav>
 
-        <!-- RIGHT: SEARCH + THEME -->
+        <!-- RIGHT: SEARCH & THEME -->
         <div style="display: flex; align-items: center; gap: 10px">
           <div class="search-wrap">
             <button
@@ -72,15 +73,21 @@
       </header>
     </div>
 
+    <!-- PAGE -->
     <main class="page container">
       <h1>Genres</h1>
-      <div id="genres" class="card-grid" style="margin-top: 20px"></div>
+      <p style="color: var(--muted); margin-top: 6px; margin-bottom: 16px">
+        Tap any genre to explore related anime.
+      </p>
+      <div id="genres" class="card-grid"></div>
     </main>
 
+    <!-- FOOTER -->
     <footer class="footer container">
       <p style="color: var(--muted)">© AnimeVerse</p>
     </footer>
 
+    <!-- SCRIPTS -->
     <script src="assets/js/api.js"></script>
     <script src="assets/js/theme.js"></script>
     <script src="assets/js/app.js"></script>
@@ -88,19 +95,38 @@
     <script>
       (async () => {
         const out = document.getElementById("genres");
-        const list = await fetchGenres();
 
-        out.innerHTML = list
-          .map(
-            (g) => `
-        <a class="card"
-           href="trending.html?genre=${g.mal_id}"
-           style="padding:14px;text-align:center;font-weight:700;display:flex;justify-content:center;align-items:center;height:80px">
-          ${esc(g.name)}
-        </a>
-      `
-          )
-          .join("");
+        try {
+          out.innerHTML = `<div style="color:var(--muted);padding:20px">Loading…</div>`;
+          const list = await fetchGenres();
+
+          if (!list || !list.length) {
+            out.innerHTML = `<div style="color:var(--muted)">Failed to load genres.</div>`;
+            return;
+          }
+
+          out.innerHTML = list
+            .map(
+              (g) => `
+              <a class="card"
+                 href="trending.html?genre=${g.mal_id}"
+                 style="
+                    padding:16px;
+                    text-align:center;
+                    font-weight:700;
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    height:90px;
+                 ">
+                ${esc(g.name)}
+              </a>`
+            )
+            .join("");
+        } catch (err) {
+          console.error(err);
+          out.innerHTML = `<div style="color:var(--muted)">Error loading genres.</div>`;
+        }
       })();
     </script>
   </body>

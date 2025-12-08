@@ -13,7 +13,7 @@
     <!-- HEADER -->
     <div class="header-wrap">
       <header class="header container">
-        <!-- LEFT: BRAND + MOBILE MENU BUTTON -->
+        <!-- LEFT: BRAND + MOBILE MENU -->
         <div style="display: flex; align-items: center; gap: 12px">
           <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
           <div class="brand"><span class="logo"></span> AnimeVerse</div>
@@ -21,7 +21,7 @@
 
         <!-- NAV MENU -->
         <nav class="nav" id="main-nav" aria-label="Main navigation">
-          <a href="index.html" class="active">Home</a>
+          <a href="index.html">Home</a>
           <a href="trending.html">Trending</a>
           <a href="genres.html">Genres</a>
           <a href="favorites.html">Favorites</a>
@@ -73,8 +73,9 @@
       </header>
     </div>
 
+    <!-- PAGE -->
     <main class="page container">
-      <h1>Search Results</h1>
+      <h1 id="query-title">Search Results</h1>
       <div id="results" class="card-grid" style="margin-top: 20px"></div>
     </main>
 
@@ -82,6 +83,7 @@
       <p style="color: var(--muted)">© AnimeVerse</p>
     </footer>
 
+    <!-- SCRIPTS -->
     <script src="assets/js/api.js"></script>
     <script src="assets/js/theme.js"></script>
     <script src="assets/js/app.js"></script>
@@ -90,15 +92,33 @@
       (async () => {
         const q = new URLSearchParams(location.search).get("q");
         const out = document.getElementById("results");
+        const title = document.getElementById("query-title");
 
         if (!q) {
+          title.textContent = "No search query provided";
           out.innerHTML =
-            "<div style='color:var(--muted)'>No query provided.</div>";
+            "<div style='color:var(--muted)'>Type something first.</div>";
           return;
         }
 
+        // Update title
+        title.textContent = `Results for “${q}”`;
+
+        // Fetch search data
         const data = await searchAnime(q);
-        renderGrid(out, data);
+
+        // Render results
+        if (!data || data.length === 0) {
+          out.innerHTML =
+            "<div style='color:var(--muted)'>No results found.</div>";
+        } else {
+          renderGrid(out, data);
+        }
+
+        // Mark "Search" as active in nav
+        document
+          .querySelectorAll("nav a")
+          .forEach((a) => a.classList.remove("active"));
       })();
     </script>
   </body>
