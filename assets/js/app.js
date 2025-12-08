@@ -1,10 +1,6 @@
-/* app.js — AnimeVerse V3.3
-   Clean hero carousel, search, favorites, grid rendering
-*/
-
-/* ---------------------------
-      GLOBAL NAV SEARCH
----------------------------- */
+/* ============================================================
+   SEARCH SYSTEM
+============================================================ */
 
 const searchInput = document.getElementById("nav-search-input");
 const searchOpenBtn = document.getElementById("search-open");
@@ -23,35 +19,34 @@ function renderSuggestions(list) {
     if (!list || list.length === 0) {
         suggestionsBox.innerHTML =
             `<div style="padding:8px;color:var(--muted);font-size:.9rem">
-        No results found.
-      </div>`;
+               No results found.
+             </div>`;
         return;
     }
 
     suggestionsBox.innerHTML = list
         .map(
             item => `
-    <div class="suggest-item"
-         onclick="location.href='anime.html?id=${item.mal_id}'"
-         style="padding:10px;cursor:pointer;border-radius:10px;
-                display:flex;gap:10px;align-items:center">
-      
-      <img src="${item.images?.jpg?.image_url}"
-           style="width:40px;height:56px;border-radius:6px;object-fit:cover"/>
+        <div class="suggest-item"
+             onclick="location.href='anime.html?id=${item.mal_id}'"
+             style="padding:10px;cursor:pointer;border-radius:10px;
+                    display:flex;gap:10px;align-items:center">
 
-      <div>
-        <div style="font-weight:600">${esc(item.title)}</div>
-        <div style="color:var(--muted);font-size:.8rem">
-          ${item.type || "Anime"} • ${item.year || "—"}
-        </div>
-      </div>
+          <img src="${item.images?.jpg?.image_url}"
+               style="width:40px;height:56px;border-radius:6px;object-fit:cover"/>
 
-    </div>`
+          <div>
+            <div style="font-weight:600">${esc(item.title)}</div>
+            <div style="color:var(--muted);font-size:.8rem">
+              ${item.type || "Anime"} • ${item.year || "—"}
+            </div>
+          </div>
+        </div>`
         )
         .join("");
 }
 
-/* open search bar */
+/* toggle search bar */
 searchOpenBtn?.addEventListener("click", () => {
     searchInput.classList.toggle("expanded");
     if (searchInput.classList.contains("expanded")) {
@@ -61,7 +56,7 @@ searchOpenBtn?.addEventListener("click", () => {
     }
 });
 
-/* press S to focus */
+/* keyboard shortcut: S to focus */
 document.addEventListener("keydown", e => {
     if (e.key.toLowerCase() === "s" && document.activeElement !== searchInput) {
         e.preventDefault();
@@ -70,7 +65,7 @@ document.addEventListener("keydown", e => {
     }
 });
 
-/* search typing */
+/* on typing: fetch suggestions */
 searchInput?.addEventListener("input", async () => {
     const q = searchInput.value.trim();
     if (!q) {
@@ -83,7 +78,7 @@ searchInput?.addEventListener("input", async () => {
     renderSuggestions(data);
 });
 
-/* search enter */
+/* enter = go to search page */
 searchInput?.addEventListener("keydown", e => {
     if (e.key === "Enter") {
         const q = searchInput.value.trim();
@@ -94,7 +89,7 @@ searchInput?.addEventListener("keydown", e => {
     }
 });
 
-/* voice search */
+/* voice input */
 voiceBtn?.addEventListener("click", () => {
     if (!("webkitSpeechRecognition" in window)) {
         alert("Speech recognition not supported in this browser.");
@@ -115,9 +110,9 @@ voiceBtn?.addEventListener("click", () => {
 });
 
 
-/* ---------------------------
-        FAVORITES
----------------------------- */
+/* ============================================================
+   FAVORITES SYSTEM
+============================================================ */
 
 function getFavorites() {
     return JSON.parse(localStorage.getItem("favs") || "[]");
@@ -126,6 +121,7 @@ function getFavorites() {
 function toggleFavorite(id) {
     let f = getFavorites();
     let added;
+
     if (f.includes(id)) {
         f = f.filter(x => x !== id);
         added = false;
@@ -133,19 +129,19 @@ function toggleFavorite(id) {
         f.push(id);
         added = true;
     }
+
     localStorage.setItem("favs", JSON.stringify(f));
     return added;
 }
-
 
 function isFavorite(id) {
     return getFavorites().includes(id);
 }
 
 
-/* ---------------------------
-      GRID RENDERER
----------------------------- */
+/* ============================================================
+   GRID RENDERER
+============================================================ */
 
 function renderGrid(container, items) {
     if (!items || !items.length) {
@@ -157,21 +153,39 @@ function renderGrid(container, items) {
         .map(it => {
             const img = it.images?.jpg?.image_url;
             return `
-      <a class="card" href="anime.html?id=${it.mal_id}">
-        <img src="${img}" class="poster"/>
-        <div class="card-body">
-          <div class="card-title">${esc(it.title)}</div>
-          <div class="card-meta">⭐ ${it.score || "N/A"}</div>
-        </div>
-      </a>`;
+        <a class="card" href="anime.html?id=${it.mal_id}">
+          <img src="${img}" class="poster"/>
+          <div class="card-body">
+            <div class="card-title">${esc(it.title)}</div>
+            <div class="card-meta">⭐ ${it.score || "N/A"}</div>
+          </div>
+        </a>`;
         })
         .join("");
 }
 
 
-/* ---------------------------
-      HERO CAROUSEL ENGINE
----------------------------- */
+/* ============================================================
+   API HELPERS — FIXED FOR EXACTLY 15 ANIME
+============================================================ */
+
+async function fetchTrendingAnime(limit = 15) {
+    const url = `https://api.jikan.moe/v4/anime?order_by=popularity&sort=asc&limit=${limit}`;
+    const r = await fetch(url);
+    const j = await r.json();
+    return j.data || [];
+}
+
+async function fetchTopAnime(limit = 15) {
+    const r = await fetch(`https://api.jikan.moe/v4/top/anime?limit=${limit}`);
+    const j = await r.json();
+    return j.data || [];
+}
+
+
+/* ============================================================
+   HERO CAROUSEL — NOW USES 15 ITEMS
+============================================================ */
 
 (async function initHeroCarousel() {
     const root = document.getElementById("hero-carousel");
@@ -181,8 +195,8 @@ function renderGrid(container, items) {
     const dots = root.querySelector(".carousel-controls");
 
     try {
-        const data = await fetchTopBy("bypopularity", 1);
-        const slides = data.slice(0, 6);
+        /* FIXED: 15 slides */
+        const slides = await fetchTrendingAnime(15);
 
         track.innerHTML = "";
         dots.innerHTML = "";
@@ -192,39 +206,41 @@ function renderGrid(container, items) {
             const synopsis = (it.synopsis || "No synopsis.").slice(0, 200) + "...";
             const genreNames = it.genres?.map(g => g.name).slice(0, 3).join(" • ") || "Anime";
 
-            /* BUILD SLIDE */
             const slide = document.createElement("div");
             slide.className = "carousel-item";
 
             slide.innerHTML = `
-  <div class="carousel-left">
-    <div class="hero-v4-genres">${esc(genreNames)}</div>
-    <h2 class="h-title">${esc(it.title)}</h2>
-    <div class="h-desc">${esc(synopsis)}</div>
+        <div class="carousel-left">
+          <div class="hero-v4-genres">${esc(genreNames)}</div>
+          <h2 class="h-title">${esc(it.title)}</h2>
+          <div class="h-desc">${esc(synopsis)}</div>
 
-    <div style="display:flex;gap:10px;margin-top:14px">
-      <div class="meta-pill">Score: ${it.score || "N/A"}</div>
-      <div class="meta-pill">Ep: ${it.episodes || "?"}</div>
-    </div>
+          <div style="display:flex;gap:10px;margin-top:14px">
+            <div class="meta-pill">⭐ ${it.score || "N/A"}</div>
+            <div class="meta-pill">Ep: ${it.episodes || "?"}</div>
+          </div>
 
-    <div class="hero-v4-actions" style="margin-top:18px">
-      <a class="btn primary" href="anime.html?id=${it.mal_id}">Read Now</a>
-    </div>
-  </div>
+          <div style="margin-top:18px">
+            <a class="btn primary" href="anime.html?id=${it.mal_id}">Read Now</a>
+          </div>
+        </div>
 
-  <div class="carousel-poster" style="background-image:url('${img}')"></div>
-`;
+        <div class="carousel-poster" style="background-image:url('${img}')"></div>
+      `;
 
             track.appendChild(slide);
 
-            /* DOT */
+            /* dots */
             const dot = document.createElement("div");
             dot.className = "dot";
-            dot.addEventListener("click", () => { go(index); resetTimer(); });
+            dot.addEventListener("click", () => {
+                go(index);
+                resetTimer();
+            });
             dots.appendChild(dot);
         });
 
-        /* hero-left population (first slide) */
+        /* HERO LEFT POPULATION */
         if (slides.length) {
             const f = slides[0];
             document.getElementById("hero-title").textContent = f.title;
@@ -232,8 +248,11 @@ function renderGrid(container, items) {
                 (f.synopsis || "").slice(0, 220) + "...";
             document.getElementById("hero-genres").textContent =
                 f.genres?.map(g => g.name).slice(0, 3).join(" • ") || "Anime";
-            document.getElementById("hero-read-btn").href = `anime.html?id=${f.mal_id}`;
-            document.getElementById("hero-explore-btn").href = `anime.html?id=${f.mal_id}`;
+
+            document.getElementById("hero-read-btn").href =
+                `anime.html?id=${f.mal_id}`;
+            document.getElementById("hero-explore-btn").href =
+                `anime.html?id=${f.mal_id}`;
         }
 
         /* SLIDER ENGINE */
@@ -249,7 +268,6 @@ function renderGrid(container, items) {
             });
         }
 
-        /* AUTOPLAY */
         let timer;
         function startTimer() {
             timer = setInterval(() => go(idx + 1), 4500);

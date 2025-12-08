@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>AnimeVerse V3 — Home</title>
+    <title>AnimeVerse V5 — Home</title>
     <link rel="stylesheet" href="assets/css/reset.css" />
     <link rel="stylesheet" href="assets/css/style.css" />
   </head>
@@ -160,48 +160,54 @@
     <script>
       (async function initHome() {
         try {
-          // get top trending (bypopularity) and top rated
-          const trending = await fetchTopBy("bypopularity", 1);
-          const top = await fetchTopBy("rating", 1);
+          /* FETCH DATA */
+          const trending = await fetchTrendingAnime(15); // popular anime
+          const topRated = await fetchTopAnime(15); // top scored anime
           const genres = await fetchGenres();
 
-          // render previews
-          const trendingPreview = document.getElementById("trending-preview");
-          const topPreview = document.getElementById("toprated-preview");
-          const genresPreview = document.getElementById("genres-preview");
+          /* PREVIEW GRIDS */
+          renderGrid(document.getElementById("trending-preview"), trending);
 
-          renderGrid(trendingPreview, trending.slice(0, 8));
-          renderGrid(topPreview, top.slice(0, 8));
-          genresPreview.innerHTML = genres
-            .slice(0, 12)
+          renderGrid(document.getElementById("toprated-preview"), topRated);
+
+          /* GENRES PREVIEW */
+          document.getElementById("genres-preview").innerHTML = genres
+            .slice(0, 15)
             .map(
               (g) =>
-                `<a class="card" href="trending.html?genre=${
-                  g.mal_id
-                }" style="padding:12px;text-align:center;display:flex;align-items:center;justify-content:center;height:84px">${esc(
-                  g.name
-                )}</a>`
+                `<a class="card" href="trending.html?genre=${g.mal_id}"
+                style="padding:12px;text-align:center;display:flex;
+                align-items:center;justify-content:center;height:84px">
+                ${esc(g.name)}
+             </a>`
             )
             .join("");
 
-          // Populate hero content from first trending item (also hero carousel JS will take care of carousel)
-          if (trending && trending.length) {
-            const hero = trending[0];
-            document.getElementById("hero-title").textContent = hero.title;
-            document.getElementById("hero-desc").textContent = (
-              hero.synopsis || ""
-            ).slice(0, 220);
-            document.getElementById("hero-score").textContent = `Score: ${
-              hero.score || "N/A"
-            }`;
-            document.getElementById("hero-episodes").textContent = `Ep: ${
-              hero.episodes || "—"
-            }`;
-            document.getElementById("hero-type").textContent = hero.type || "";
-            document.getElementById("hero-meta").style.display = "flex";
-            document.getElementById("hero-primary").onclick = () =>
-              (location.href = `anime.html?id=${hero.mal_id}`);
-          }
+          /* ========= HERO SECTION FIX ========= */
+          const hero = trending[0];
+
+          /* Title + Description */
+          document.getElementById("hero-title").textContent = hero.title;
+          document.getElementById("hero-desc").textContent = (
+            hero.synopsis || ""
+          ).slice(0, 220);
+
+          /* Meta Pills */
+          document.getElementById("hero-meta").innerHTML = `
+        <span class="meta-pill">⭐ ${hero.score || "N/A"}</span>
+        <span class="meta-pill">Ep: ${hero.episodes || "—"}</span>
+        <span class="meta-pill">${hero.type || ""}</span>
+      `;
+
+          /* Buttons */
+          document.getElementById(
+            "hero-read-btn"
+          ).href = `anime.html?id=${hero.mal_id}`;
+          document.getElementById(
+            "hero-explore-btn"
+          ).href = `anime.html?id=${hero.mal_id}`;
+
+          /* Carousel initializes automatically via app.js */
         } catch (e) {
           console.error("Init home error", e);
         }
