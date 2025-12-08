@@ -13,36 +13,55 @@
     <!-- HEADER -->
     <div class="header-wrap">
       <header class="header container">
+        <!-- LEFT: BRAND + MOBILE MENU BUTTON -->
         <div style="display: flex; align-items: center; gap: 12px">
+          <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
           <div class="brand"><span class="logo"></span> AnimeVerse</div>
         </div>
 
-        <nav class="nav">
-          <a href="index.html">Home</a>
+        <!-- NAV MENU -->
+        <nav class="nav" id="main-nav" aria-label="Main navigation">
+          <a href="index.html" class="active">Home</a>
           <a href="trending.html">Trending</a>
           <a href="genres.html">Genres</a>
           <a href="favorites.html">Favorites</a>
           <a href="about.html">About</a>
         </nav>
 
+        <!-- RIGHT: SEARCH + THEME -->
         <div style="display: flex; align-items: center; gap: 10px">
           <div class="search-wrap">
-            <button id="search-open" class="search-toggle">🔍</button>
+            <button
+              id="search-open"
+              class="search-toggle"
+              aria-label="Open search"
+            >
+              🔍
+            </button>
             <input
               id="nav-search-input"
               class="search-input"
-              placeholder="Search anime…"
+              type="search"
+              placeholder="Search anime (press S)..."
             />
-            <button id="voice-btn" class="search-toggle">🎤</button>
-            <div id="suggestions" class="suggestions"></div>
+            <button
+              id="voice-btn"
+              class="search-toggle"
+              aria-label="Voice search"
+            >
+              🎤
+            </button>
+            <div id="suggestions" class="suggestions" aria-hidden="true"></div>
           </div>
+
           <div class="controls">
             <button
+              id="theme-toggle"
               onclick="animeverseToggleTheme()"
               class="pill"
               style="
                 background: transparent;
-                border: 1px solid rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.03);
                 padding: 8px;
                 border-radius: 10px;
               "

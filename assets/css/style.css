@@ -727,3 +727,46 @@ body {
   border: none;
   box-shadow: var(--shadow-lg);
 }
+
+/* MOBILE MENU BUTTON */
+.mobile-nav-toggle {
+  display: none;
+  font-size: 1.3rem;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* NAV DEFAULT (DESKTOP) */
+.nav {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+
+/* NAV MOBILE BEHAVIOR */
+@media (max-width: 820px) {
+  .mobile-nav-toggle {
+    display: block;
+  }
+
+  .nav {
+    display: none;
+    flex-direction: column;
+    background: var(--surface);
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    position: absolute;
+    top: 70px;
+    left: 16px;
+    right: 16px;
+    z-index: 999;
+    gap: 14px;
+  }
+
+  .nav.open {
+    display: flex;
+  }
+}

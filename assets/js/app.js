@@ -109,6 +109,16 @@ voiceBtn?.addEventListener("click", () => {
     };
 });
 
+/* MOBILE NAVIGATION */
+const mobileToggle = document.getElementById("mobile-nav-toggle");
+const mainNav = document.getElementById("main-nav");
+
+if (mobileToggle) {
+    mobileToggle.addEventListener("click", () => {
+        mainNav.classList.toggle("open");
+    });
+}
+
 
 /* ============================================================
    FAVORITES SYSTEM

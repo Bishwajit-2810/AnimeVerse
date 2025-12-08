@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>AnimeVerse V6 — Home</title>
+    <title>AnimeVerse V7 — Home</title>
     <link rel="stylesheet" href="assets/css/reset.css" />
     <link rel="stylesheet" href="assets/css/style.css" />
   </head>
@@ -11,11 +11,14 @@
     <!-- HEADER (identical on every page) -->
     <div class="header-wrap">
       <header class="header container">
+        <!-- LEFT: BRAND + MOBILE MENU BUTTON -->
         <div style="display: flex; align-items: center; gap: 12px">
+          <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
           <div class="brand"><span class="logo"></span> AnimeVerse</div>
         </div>
 
-        <nav class="nav" aria-label="Main navigation">
+        <!-- NAV MENU -->
+        <nav class="nav" id="main-nav" aria-label="Main navigation">
           <a href="index.html" class="active">Home</a>
           <a href="trending.html">Trending</a>
           <a href="genres.html">Genres</a>
@@ -23,6 +26,7 @@
           <a href="about.html">About</a>
         </nav>
 
+        <!-- RIGHT: SEARCH + THEME -->
         <div style="display: flex; align-items: center; gap: 10px">
           <div class="search-wrap">
             <button
