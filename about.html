@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>About — AnimeVerse</title>
+
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div class="header-wrap">
+      <header class="header container">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div class="brand"><span class="logo"></span> AnimeVerse</div>
+        </div>
+
+        <nav class="nav">
+          <a href="index.html">Home</a>
+          <a href="trending.html">Trending</a>
+          <a href="genres.html">Genres</a>
+          <a href="favorites.html">Favorites</a>
+          <a href="about.html" class="active">About</a>
+        </nav>
+
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div class="search-wrap">
+            <button id="search-open" class="search-toggle">🔍</button>
+            <input id="nav-search-input" class="search-input" />
+            <button id="voice-btn" class="search-toggle">🎤</button>
+            <div id="suggestions" class="suggestions"></div>
+          </div>
+
+          <div class="controls">
+            <button
+              onclick="animeverseToggleTheme()"
+              class="pill"
+              style="
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 8px;
+                border-radius: 10px;
+              "
+            >
+              🌓
+            </button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <main class="page container">
+      <h1>About AnimeVerse</h1>
+      <p
+        style="
+          color: var(--muted);
+          font-size: 1.1rem;
+          margin-top: 12px;
+          line-height: 1.6;
+        "
+      >
+        AnimeVerse is a front-end demo built with HTML, CSS, JS, and the Jikan
+        API. It features a cinematic hero carousel, advanced search, favorites,
+        genres, and responsive anime browsing UI inspired by modern manga-reader
+        design.
+      </p>
+    </main>
+
+    <footer class="footer container">
+      <p style="color: var(--muted)">© AnimeVerse</p>
+    </footer>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AnimeVerse V3 — Home</title>
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <!-- HEADER (identical on every page) -->
+    <div class="header-wrap">
+      <header class="header container">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div class="brand"><span class="logo"></span> AnimeVerse</div>
+        </div>
+
+        <nav class="nav" aria-label="Main navigation">
+          <a href="index.html" class="active">Home</a>
+          <a href="trending.html">Trending</a>
+          <a href="genres.html">Genres</a>
+          <a href="favorites.html">Favorites</a>
+          <a href="about.html">About</a>
+        </nav>
+
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div class="search-wrap">
+            <button
+              id="search-open"
+              class="search-toggle"
+              aria-label="Open search"
+            >
+              🔍
+            </button>
+            <input
+              id="nav-search-input"
+              class="search-input"
+              type="search"
+              placeholder="Search anime (press S)..."
+            />
+            <button
+              id="voice-btn"
+              class="search-toggle"
+              aria-label="Voice search"
+            >
+              🎤
+            </button>
+            <div id="suggestions" class="suggestions" aria-hidden="true"></div>
+          </div>
+
+          <div class="controls">
+            <button
+              id="theme-toggle"
+              onclick="animeverseToggleTheme()"
+              class="pill"
+              style="
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.03);
+                padding: 8px;
+                border-radius: 10px;
+              "
+            >
+              🌓
+            </button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <!-- MAIN PAGE -->
+    <main class="page">
+      <!-- HERO -->
+
+      <section class="hero-wrap">
+        <div class="hero">
+          <!-- LEFT SIDE -->
+          <div class="hero-left">
+            <div class="kicker" id="hero-genres">
+              <!-- injected by JS -->
+            </div>
+
+            <h1 class="h-title" id="hero-title">Loading…</h1>
+
+            <p class="h-desc" id="hero-desc">
+              <!-- injected by JS -->
+            </p>
+
+            <div
+              style="display: flex; gap: 12px; margin-top: 20px"
+              id="hero-meta"
+            >
+              <!-- Score • Episodes • Type -->
+            </div>
+
+            <div style="display: flex; gap: 14px; margin-top: 22px">
+              <a id="hero-read-btn" class="btn primary" href="#">Read Now</a>
+              <a id="hero-explore-btn" class="btn secondary" href="#"
+                >Explore</a
+              >
+            </div>
+          </div>
+
+          <!-- RIGHT SIDE (CAROUSEL) -->
+          <div class="hero-right">
+            <div
+              id="hero-carousel"
+              class="hero-carousel-container"
+              aria-hidden="false"
+            >
+              <!-- TRACK THAT SLIDES LEFT/RIGHT -->
+              <div class="carousel-track">
+                <!-- JS inserts .carousel-item blocks here -->
+              </div>
+
+              <!-- DOTS -->
+              <div class="carousel-controls"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="wave" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+          <path
+            fill="#0b0f14"
+            d="M0,32 C360,80 720,0 1080,32 C1320,56 1440,10 1440,10 L1440,80 L0,80 Z"
+          ></path>
+        </svg>
+      </div>
+
+      <!-- PREVIEWS -->
+      <section class="section">
+        <h2>Trending Now</h2>
+        <div id="trending-preview" class="card-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="section">
+        <h2>Top Rated</h2>
+        <div id="toprated-preview" class="card-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="section">
+        <h2>Explore by Genre</h2>
+        <div id="genres-preview" class="card-grid" aria-live="polite"></div>
+      </section>
+
+      <footer class="footer container">
+        <p style="color: var(--muted)">
+          © AnimeVerse — demo. Data via Jikan public API.
+        </p>
+      </footer>
+    </main>
+
+    <!-- SCRIPTS (order matters) -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/app.js"></script>
+
+    <!-- Initializers (populate hero and previews) -->
+    <script>
+      (async function initHome() {
+        try {
+          // get top trending (bypopularity) and top rated
+          const trending = await fetchTopBy("bypopularity", 1);
+          const top = await fetchTopBy("rating", 1);
+          const genres = await fetchGenres();
+
+          // render previews
+          const trendingPreview = document.getElementById("trending-preview");
+          const topPreview = document.getElementById("toprated-preview");
+          const genresPreview = document.getElementById("genres-preview");
+
+          renderGrid(trendingPreview, trending.slice(0, 8));
+          renderGrid(topPreview, top.slice(0, 8));
+          genresPreview.innerHTML = genres
+            .slice(0, 12)
+            .map(
+              (g) =>
+                `<a class="card" href="trending.html?genre=${
+                  g.mal_id
+                }" style="padding:12px;text-align:center;display:flex;align-items:center;justify-content:center;height:84px">${esc(
+                  g.name
+                )}</a>`
+            )
+            .join("");
+
+          // Populate hero content from first trending item (also hero carousel JS will take care of carousel)
+          if (trending && trending.length) {
+            const hero = trending[0];
+            document.getElementById("hero-title").textContent = hero.title;
+            document.getElementById("hero-desc").textContent = (
+              hero.synopsis || ""
+            ).slice(0, 220);
+            document.getElementById("hero-score").textContent = `Score: ${
+              hero.score || "N/A"
+            }`;
+            document.getElementById("hero-episodes").textContent = `Ep: ${
+              hero.episodes || "—"
+            }`;
+            document.getElementById("hero-type").textContent = hero.type || "";
+            document.getElementById("hero-meta").style.display = "flex";
+            document.getElementById("hero-primary").onclick = () =>
+              (location.href = `anime.html?id=${hero.mal_id}`);
+          }
+        } catch (e) {
+          console.error("Init home error", e);
+        }
+      })();
+    </script>
+  </body>
+</html>

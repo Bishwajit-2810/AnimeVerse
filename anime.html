@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Anime Details — AnimeVerse</title>
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div class="header-wrap">
+      <header class="header container">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div class="brand"><span class="logo"></span> AnimeVerse</div>
+        </div>
+
+        <nav class="nav">
+          <a href="index.html">Home</a>
+          <a href="trending.html">Trending</a>
+          <a href="genres.html">Genres</a>
+          <a href="favorites.html">Favorites</a>
+          <a href="about.html">About</a>
+        </nav>
+
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div class="search-wrap">
+            <button id="search-open" class="search-toggle">🔍</button>
+            <input
+              id="nav-search-input"
+              class="search-input"
+              type="search"
+              placeholder="Search anime…"
+            />
+            <button id="voice-btn" class="search-toggle">🎤</button>
+            <div id="suggestions" class="suggestions"></div>
+          </div>
+
+          <div class="controls">
+            <button
+              onclick="animeverseToggleTheme()"
+              class="pill"
+              style="
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 8px;
+                border-radius: 10px;
+              "
+            >
+              🌓
+            </button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <!-- PAGE -->
+    <main class="page container" id="content">
+      <div style="padding: 40px; color: var(--muted)">Loading…</div>
+    </main>
+
+    <footer class="footer container">
+      <p style="color: var(--muted)">© AnimeVerse</p>
+    </footer>
+
+    <!-- scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/app.js"></script>
+
+    <script>
+      (async () => {
+        const id = new URLSearchParams(location.search).get("id");
+        const root = document.getElementById("content");
+
+        if (!id) {
+          root.innerHTML = "<p>Missing anime ID.</p>";
+          return;
+        }
+
+        const data = await fetchAnimeDetails(id);
+        if (!data) {
+          root.innerHTML = "<p>Anime not found.</p>";
+          return;
+        }
+
+        const img = data.images?.jpg?.large_image_url;
+        const title = data.title;
+        const score = data.score || "N/A";
+        const episodes = data.episodes || "—";
+        const synopsis = data.synopsis || "No synopsis available.";
+
+        root.innerHTML = `
+        <div style="display:grid;grid-template-columns:320px 1fr;gap:24px">
+          
+          <div>
+            <img src="${img}" style="width:100%;border-radius:12px;box-shadow:var(--shadow-lg)"/>
+            <button class="btn" style="margin-top:14px;width:100%" onclick="toggleFavorite(${
+              data.mal_id
+            })">
+              ❤ Add to Favorites
+            </button>
+            <a class="btn secondary" style="margin-top:8px;display:block;text-align:center"
+               href="https://myanimelist.net/anime/${
+                 data.mal_id
+               }" target="_blank">
+               View on MAL
+            </a>
+          </div>
+
+          <div>
+            <h1 style="margin-bottom:10px">${esc(title)}</h1>
+
+            <div style="color:var(--muted);margin-bottom:12px">
+              ⭐ Score: <b style="color:var(--accent)">${score}</b> • Episodes: ${episodes}
+            </div>
+
+            <h3>Synopsis</h3>
+            <p style="color:var(--muted);line-height:1.6;margin-top:6px">${esc(
+              synopsis
+            )}</p>
+          </div>
+
+        </div>
+      `;
+      })();
+    </script>
+  </body>
+</html>

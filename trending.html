@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Trending — AnimeVerse</title>
+
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+
+  <body>
+    <!-- HEADER (100% identical on all pages) -->
+    <div class="header-wrap">
+      <header class="header container">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div class="brand"><span class="logo"></span> AnimeVerse</div>
+        </div>
+
+        <nav class="nav">
+          <a href="index.html">Home</a>
+          <a href="trending.html" class="active">Trending</a>
+          <a href="genres.html">Genres</a>
+          <a href="favorites.html">Favorites</a>
+          <a href="about.html">About</a>
+        </nav>
+
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div class="search-wrap">
+            <button id="search-open" class="search-toggle">🔍</button>
+            <input
+              id="nav-search-input"
+              class="search-input"
+              type="search"
+              placeholder="Search anime (press S)…"
+            />
+            <button id="voice-btn" class="search-toggle">🎤</button>
+            <div id="suggestions" class="suggestions"></div>
+          </div>
+
+          <div class="controls">
+            <button
+              onclick="animeverseToggleTheme()"
+              class="pill"
+              style="
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 8px;
+                border-radius: 10px;
+              "
+            >
+              🌓
+            </button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <!-- PAGE -->
+    <main class="page container">
+      <h1 style="margin-bottom: 18px">Trending Anime</h1>
+
+      <div id="grid" class="card-grid" aria-live="polite"></div>
+
+      <div
+        id="pagination"
+        style="
+          margin-top: 22px;
+          display: flex;
+          justify-content: center;
+          gap: 14px;
+        "
+      ></div>
+    </main>
+
+    <footer class="footer container">
+      <p style="color: var(--muted)">© AnimeVerse — Data via Jikan API</p>
+    </footer>
+
+    <!-- SCRIPTS (IMPORTANT ORDER) -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/app.js"></script>
+
+    <!-- TRENDING LOGIC -->
+    <script>
+      (function () {
+        const grid = document.getElementById("grid");
+        const pag = document.getElementById("pagination");
+
+        const params = new URLSearchParams(location.search);
+        const genre = params.get("genre");
+
+        let page = parseInt(params.get("page") || "1");
+
+        async function loadPage() {
+          grid.innerHTML = `<div style="padding:30px;color:var(--muted)">Loading…</div>`;
+
+          let data;
+          if (genre) {
+            data = await fetchAnimeByGenre(genre, page);
+          } else {
+            data = await fetchTopBy("bypopularity", page);
+          }
+
+          renderGrid(grid, data);
+
+          pag.innerHTML = "";
+
+          const prev = document.createElement("button");
+          prev.textContent = "← Prev";
+          prev.className = "btn secondary";
+          prev.style.padding = "8px 16px";
+          prev.disabled = page <= 1;
+          prev.onclick = () => {
+            page--;
+            loadPage();
+          };
+
+          const next = document.createElement("button");
+          next.textContent = "Next →";
+          next.className = "btn secondary";
+          next.style.padding = "8px 16px";
+          next.onclick = () => {
+            page++;
+            loadPage();
+          };
+
+          const pnum = document.createElement("div");
+          pnum.textContent = `Page ${page}`;
+          pnum.style.color = "var(--muted)";
+          pnum.style.padding = "10px 6px";
+
+          pag.appendChild(prev);
+          pag.appendChild(pnum);
+          pag.appendChild(next);
+        }
+
+        loadPage();
+      })();
+    </script>
+  </body>
+</html>

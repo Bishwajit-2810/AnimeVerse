@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Favorites — AnimeVerse</title>
+
+    <link rel="stylesheet" href="assets/css/reset.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div class="header-wrap">
+      <header class="header container">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div class="brand"><span class="logo"></span> AnimeVerse</div>
+        </div>
+
+        <nav class="nav">
+          <a href="index.html">Home</a>
+          <a href="trending.html">Trending</a>
+          <a href="genres.html">Genres</a>
+          <a href="favorites.html" class="active">Favorites</a>
+          <a href="about.html">About</a>
+        </nav>
+
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div class="search-wrap">
+            <button id="search-open" class="search-toggle">🔍</button>
+            <input id="nav-search-input" class="search-input" />
+            <button id="voice-btn" class="search-toggle">🎤</button>
+            <div id="suggestions" class="suggestions"></div>
+          </div>
+
+          <div class="controls">
+            <button
+              onclick="animeverseToggleTheme()"
+              class="pill"
+              style="
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 8px;
+                border-radius: 10px;
+              "
+            >
+              🌓
+            </button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <main class="page container">
+      <h1>Your Favorites</h1>
+      <div id="favorites-grid" class="card-grid" style="margin-top: 20px"></div>
+      <div id="fav-msg" style="color: var(--muted); margin-top: 14px"></div>
+    </main>
+
+    <footer class="footer container">
+      <p style="color: var(--muted)">© AnimeVerse</p>
+    </footer>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/app.js"></script>
+
+    <script>
+      (async () => {
+        const grid = document.getElementById("favorites-grid");
+        const msg = document.getElementById("fav-msg");
+        let favs = getFavorites();
+
+        if (!favs.length) {
+          msg.textContent = "No favorites added yet.";
+          return;
+        }
+
+        msg.textContent = "Loading your favorites…";
+
+        const details = await Promise.all(
+          favs.map((id) => fetchAnimeBasic(id).catch(() => null))
+        );
+        const items = details.filter(Boolean);
+
+        if (!items.length) {
+          msg.textContent = "Could not load favorites (API rate limit).";
+          return;
+        }
+
+        msg.textContent = "";
+        renderGrid(grid, items);
+      })();
+    </script>
+  </body>
+</html>

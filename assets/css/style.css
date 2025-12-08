@@ -1,0 +1,587 @@
+/* style.css - AnimeVerse V3 (BacaKomik Clone - Bright Yellow) */
+
+/* Design tokens */
+:root {
+  --bg: #0b0f14;
+  --surface: #0f1418;
+  --card: #12171b;
+  --muted: #9aa4b2;
+  --text: #eaf0f6;
+  --accent: #ffcd34; /* bright yellow */
+  --accent-2: #ffda7a;
+  --radius: 14px;
+  --header-h: 76px;
+  --container: 1150px;
+  --shadow-lg: 0 20px 50px rgba(2, 6, 23, 0.6);
+  --shadow-sm: 0 8px 28px rgba(0, 0, 0, 0.5);
+  --glass: rgba(255, 255, 255, 0.02);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+}
+
+:root[data-theme="light"] {
+  --bg: #fbfbfc;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --muted: #5b6570;
+  --text: #071016;
+  --glass: rgba(2, 6, 23, 0.02);
+  --shadow-lg: 0 12px 36px rgba(3, 7, 18, 0.08);
+}
+
+/* base */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* header */
+.header-wrap {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  top: 12px;
+  z-index: 120;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.01)
+  );
+  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.02);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.brand .logo {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 6px 18px rgba(255, 205, 52, 0.08);
+}
+
+/* nav */
+.nav {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  position: relative;
+}
+.nav a {
+  color: var(--muted);
+  font-weight: 600;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+.nav a:hover,
+.nav a.active {
+  color: var(--text);
+}
+
+/* search */
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+.search-toggle {
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+}
+.search-input {
+  width: 0;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: width 0.26s ease, opacity 0.18s ease;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  color: var(--text);
+}
+.search-input.expanded {
+  width: 240px;
+  opacity: 1;
+  transform: none;
+}
+.suggestions {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  width: 320px;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: var(--shadow-lg);
+  display: none;
+}
+.suggestions.visible {
+  display: block;
+}
+
+/* header controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* page spacing */
+.page {
+  padding-top: calc(var(--header-h) + 28px);
+  position: relative;
+  z-index: 5;
+}
+
+/* hero cinematic */
+.hero-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 28px 0 6px;
+}
+.hero {
+  width: 100%;
+  max-width: 1200px;
+  border-radius: 20px;
+  padding: 28px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.01)
+  );
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.hero-left {
+  flex: 1;
+}
+.kicker {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.h-title {
+  font-family: system-ui, "Segoe UI", Roboto, "Helvetica Neue";
+  font-size: 2.6rem;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.h-desc {
+  color: var(--muted);
+  max-width: 620px;
+  margin-bottom: 18px;
+}
+.h-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+.meta-pill {
+  background: var(--surface);
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--text);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+/* hero CTA */
+.cta-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+.btn {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #000;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 800;
+  border: 0;
+  cursor: pointer;
+}
+.btn.secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* hero art */
+.hero-right {
+  width: 360px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.hero-art {
+  width: 320px;
+  height: 420px;
+  border-radius: 14px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* carousel controls (small) */
+.carousel-controls {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+/* wave */
+.wave {
+  margin-top: 18px;
+  width: 100%;
+  height: 80px;
+  overflow: hidden;
+}
+.wave svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* sections */
+.section {
+  max-width: var(--container);
+  margin: 34px auto;
+  padding: 0 20px;
+}
+.section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+/* layout */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 28px;
+  align-items: start;
+}
+
+/* cards */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 22px;
+}
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+}
+.poster {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+.card-body {
+  padding: 10px;
+}
+.card-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.card-meta {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* small tag */
+.tag {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--accent);
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+/* sidebar */
+.sidebar {
+  background: transparent;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* footer */
+.footer {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* responsive */
+@media (max-width: 980px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+  .hero-right {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .hero-art {
+    width: 260px;
+    height: 360px;
+  }
+  .nav {
+    display: none;
+  }
+  .search-input.expanded {
+    width: 160px;
+  }
+}
+
+/* ===========================================================
+   HERO SECTION (V3 FINAL STABLE)
+   =========================================================== */
+
+.hero-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.hero {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1150px;
+}
+
+/* ---------- LEFT SIDE ---------- */
+
+.hero-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.kicker {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.h-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  line-height: 1.1;
+}
+
+.h-desc {
+  color: var(--muted);
+  max-width: 600px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+/* ---------- RIGHT SIDE ---------- */
+
+.hero-right {
+  width: 360px;
+  max-width: 360px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ---------- CAROUSEL ---------- */
+
+.hero-carousel-container {
+  width: 360px;
+  height: 420px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  position: relative;
+  box-shadow: var(--shadow-lg);
+}
+
+.carousel-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.6s ease;
+}
+
+/* ---------- SLIDE ITEM ---------- */
+
+.carousel-item {
+  min-width: 100%;
+  height: 100%;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 1fr 160px; /* poster fixed */
+  gap: 18px;
+  align-items: start;
+  overflow: hidden;
+}
+
+.carousel-item > div:first-child {
+  min-width: 0; /* prevents pushing the poster */
+}
+
+.carousel-item .h-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.carousel-item .h-desc {
+  margin-top: 6px;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- POSTER ---------- */
+
+.carousel-poster {
+  width: 160px; /* FIXED WIDTH — no overlap */
+  height: 100%;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+
+/* ---------- DOTS ---------- */
+
+.carousel-controls {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.dot.active {
+  background: var(--accent);
+}
+
+/* ===========================================================
+   CARD GRID
+   =========================================================== */
+
+.card-grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 10px;
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  transition: 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.poster {
+  width: 100%;
+  border-radius: 10px;
+  height: 240px;
+  object-fit: cover;
+}
+
+.card-title {
+  margin-top: 8px;
+  font-weight: 700;
+}
+
+.card-meta {
+  color: var(--muted);
+  margin-top: 3px;
+}
