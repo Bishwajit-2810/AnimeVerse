@@ -13,11 +13,8 @@
     <!-- HEADER -->
     <div class="header-wrap">
       <header class="header container">
-        <!-- LEFT: BRAND + MOBILE MENU BUTTON -->
         <div style="display: flex; align-items: center; gap: 12px">
           <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
-
-          <!-- FIXED: BRAND NOW A CLICKABLE LINK -->
           <a
             href="index.html"
             class="brand"
@@ -27,8 +24,7 @@
           </a>
         </div>
 
-        <!-- NAV MENU -->
-        <nav class="nav" id="main-nav" aria-label="Main navigation">
+        <nav class="nav" id="main-nav">
           <a href="index.html" class="active">Home</a>
           <a href="trending.html">Trending</a>
           <a href="genres.html">Genres</a>
@@ -36,43 +32,23 @@
           <a href="about.html">About</a>
         </nav>
 
-        <!-- RIGHT: SEARCH + THEME -->
         <div style="display: flex; align-items: center; gap: 10px">
           <div class="search-wrap">
-            <button
-              id="search-open"
-              class="search-toggle"
-              aria-label="Open search"
-            >
-              🔍
-            </button>
+            <button id="search-open" class="search-toggle">🔍</button>
             <input
               id="nav-search-input"
               class="search-input"
               type="search"
               placeholder="Search anime (press S)..."
             />
-            <button
-              id="voice-btn"
-              class="search-toggle"
-              aria-label="Voice search"
-            >
-              🎤
-            </button>
-            <div id="suggestions" class="suggestions" aria-hidden="true"></div>
+            <button id="voice-btn" class="search-toggle">🎤</button>
+            <div id="suggestions" class="suggestions"></div>
           </div>
-
           <div class="controls">
             <button
               id="theme-toggle"
               onclick="animeverseToggleTheme()"
               class="pill"
-              style="
-                background: transparent;
-                border: 1px solid rgba(255, 255, 255, 0.03);
-                padding: 8px;
-                border-radius: 10px;
-              "
             >
               🌓
             </button>
@@ -105,123 +81,224 @@
           return;
         }
 
+        /* Fetch core details */
         const data = await fetchAnimeDetails(id);
         if (!data) {
           root.innerHTML = "<p>Anime not found.</p>";
           return;
         }
 
-        const img = data.images?.jpg?.large_image_url;
-        const title = data.title;
+        /* Fetch extra sections */
+        const [characters, staff, recommendations, themes] = await Promise.all([
+          fetchAnimeCharacters(id),
+          fetchAnimeStaff(id),
+          fetchAnimeRecommendations(id),
+          fetchAnimeThemes(id),
+        ]);
+
+        const poster =
+          data.images?.jpg?.large_image_url || "assets/images/placeholder.jpg";
+        const title = esc(data.title);
         const score = data.score || "N/A";
-        const episodes = data.episodes || "—";
-        const synopsis = data.synopsis || "No synopsis available.";
+        const episodes = data.episodes || "N/A";
+        const synopsis = esc(data.synopsis || "No synopsis available.");
 
         function renderFavBtn() {
           const added = isFavorite(data.mal_id);
           return `
-            <button id="fav-btn"
-                    class="btn ${added ? "favorite-active" : ""}"
-                    style="margin-top:14px;width:100%">
+            <button id="fav-btn" class="btn ${
+              added ? "favorite-active" : ""
+            }" style="margin-top:14px;width:100%">
               ${
                 added
                   ? "❤️ Added to Favorites (click to remove)"
                   : "🤍 Add to Favorites"
               }
-            </button>`;
+            </button>
+          `;
         }
 
-        /* Inject the layout */
+        /* ============================
+           MAIN DETAILS BLOCK
+        ============================ */
         root.innerHTML = `
           <div class="anime-details-grid">
-            
             <div>
-              <img src="${img}" class="poster-lg"/>
-
+              <img src="${poster}" class="poster-lg" />
               <div class="details-buttons">
                 ${renderFavBtn()}
-                <a class="btn secondary"
-                   href="https://myanimelist.net/anime/${data.mal_id}"
-                   target="_blank">
-                   View on MAL
+                <a class="btn secondary" href="https://myanimelist.net/anime/${
+                  data.mal_id
+                }" target="_blank">
+                  View on MAL
                 </a>
               </div>
             </div>
 
             <div class="anime-details-text">
-  <h1>${esc(title)}</h1>
+              <h1>${title}</h1>
 
-  <div class="meta-block">
-    ⭐ <b>${score}</b>  
-    • Episodes: ${episodes}  
-    • Type: ${data.type || "—"}  
-    • Status: ${data.status || "—"}  
-  </div>
+              <div class="meta-block">
+                ⭐ <b>${score}</b> • Episodes: ${episodes} • Type: ${
+          data.type || "—"
+        } • Status: ${data.status || "—"}
+              </div>
 
-  <div class="meta-list">
+              <div class="meta-list">
+                <div><b>Japanese:</b> ${esc(data.title_japanese || "—")}</div>
+                <div><b>English:</b> ${esc(data.title_english || "—")}</div>
+                <div><b>Season:</b> ${
+                  data.season ? data.season + " " + data.year : "—"
+                }</div>
+                <div><b>Duration:</b> ${data.duration || "—"}</div>
+                <div><b>Rating:</b> ${data.rating || "—"}</div>
+                <div><b>Studios:</b> ${
+                  data.studios?.map((s) => esc(s.name)).join(", ") || "—"
+                }</div>
+              </div>
 
-    <div><b>Japanese:</b> ${esc(data.title_japanese || "—")}</div>
-    <div><b>English:</b> ${esc(data.title_english || "—")}</div>
+              <h3 style="margin-top:20px">Synopsis</h3>
+              <p style="color:var(--muted);line-height:1.6;margin-top:6px">${synopsis}</p>
 
-    <div><b>Season:</b> ${
-      data.season ? data.season + " " + data.year : "—"
-    }</div>
-
-    <div><b>Duration:</b> ${data.duration || "—"}</div>
-    <div><b>Rating:</b> ${data.rating || "—"}</div>
-
-    <div><b>Studios:</b> 
-      ${data.studios?.map((s) => esc(s.name)).join(", ") || "—"}
-    </div>
-
-    <div><b>Producers:</b> 
-      ${data.producers?.map((p) => esc(p.name)).join(", ") || "—"}
-    </div>
-
-    <div><b>Genres:</b> 
-      ${data.genres?.map((g) => esc(g.name)).join(", ") || "—"}
-    </div>
-
-    <div><b>Rank:</b> ${data.rank || "—"}</div>
-    <div><b>Popularity:</b> ${data.popularity || "—"}</div>
-    <div><b>Favorites:</b> ${data.favorites || "—"}</div>
-  </div>
-
-  <h3 style="margin-top:20px">Synopsis</h3>
-  <p style="color:var(--muted);line-height:1.6;margin-top:6px">
-    ${esc(synopsis)}
-  </p>
-
-  ${
-    data.trailer?.url
-      ? `
-    <div class="trailer-box">
-      <h3>Trailer</h3>
-      <iframe src="${data.trailer.embed_url}" 
-              class="trailer-frame"
-              allowfullscreen></iframe>
-    </div>`
-      : ""
-  }
-</div>
-
-
+              ${
+                data.trailer?.embed_url
+                  ? `<div class="trailer-box">
+                       <h3>Trailer</h3>
+                       <iframe src="${data.trailer.embed_url}" class="trailer-frame" allowfullscreen></iframe>
+                     </div>`
+                  : ""
+              }
+            </div>
           </div>
         `;
 
-        /* Button toggle handler */
-        const favBtn = document.getElementById("fav-btn");
+        /* ============================
+           CHARACTERS
+        ============================ */
+        root.innerHTML += `
+          <section class="section">
+            <h2>Characters</h2>
+            <div class="card-grid">
+              ${
+                characters?.length
+                  ? characters
+                      .map(
+                        (c) => `
+                        <div class="card">
+                          <img class="poster" src="${
+                            c.character.images.jpg.image_url
+                          }" alt="${esc(c.character.name)}">
+                          <div class="card-body">
+                            <div class="card-title">${esc(
+                              c.character.name
+                            )}</div>
+                            <div class="card-meta">${c.role}</div>
+                          </div>
+                        </div>
+                      `
+                      )
+                      .join("")
+                  : "<p>No characters available.</p>"
+              }
+            </div>
+          </section>
+        `;
 
+        /* ============================
+           STAFF
+        ============================ */
+        root.innerHTML += `
+          <section class="section">
+            <h2>Staff</h2>
+            <div class="card-grid">
+              ${
+                staff?.length
+                  ? staff
+                      .slice(0, 12)
+                      .map(
+                        (s) => `
+                        <div class="card">
+                          <img class="poster" src="${
+                            s.person.images.jpg.image_url
+                          }" alt="${esc(s.person.name)}">
+                          <div class="card-body">
+                            <div class="card-title">${esc(s.person.name)}</div>
+                            <div class="card-meta">${s.positions.join(
+                              ", "
+                            )}</div>
+                          </div>
+                        </div>
+                      `
+                      )
+                      .join("")
+                  : "<p>No staff information available.</p>"
+              }
+            </div>
+          </section>
+        `;
+
+        /* ============================
+           THEMES (OST)
+        ============================ */
+        root.innerHTML += `
+          <section class="section">
+            <h2>Theme Songs</h2>
+            <div style="color:var(--muted)">
+              <b>Openings:</b><br>
+              ${
+                themes?.openings?.length
+                  ? themes.openings.map((t) => "• " + esc(t)).join("<br>")
+                  : "No opening themes."
+              }
+              <br><br>
+              <b>Endings:</b><br>
+              ${
+                themes?.endings?.length
+                  ? themes.endings.map((t) => "• " + esc(t)).join("<br>")
+                  : "No ending themes."
+              }
+            </div>
+          </section>
+        `;
+
+        /* ============================
+           RECOMMENDATIONS
+        ============================ */
+        root.innerHTML += `
+          <section class="section">
+            <h2>Recommended Anime</h2>
+            <div class="card-grid">
+              ${
+                recommendations?.length
+                  ? recommendations
+                      .slice(0, 12)
+                      .map(
+                        (r) => `
+                        <a class="card" href="anime.html?id=${r.entry.mal_id}">
+                          <img class="poster" src="${
+                            r.entry.images.jpg.image_url
+                          }">
+                          <div class="card-body">
+                            <div class="card-title">${esc(r.entry.title)}</div>
+                          </div>
+                        </a>
+                      `
+                      )
+                      .join("")
+                  : "<p>No recommendations available.</p>"
+              }
+            </div>
+          </section>
+        `;
+
+        /* FAVORITE BUTTON */
+        const favBtn = document.getElementById("fav-btn");
         favBtn.onclick = () => {
           const added = toggleFavorite(data.mal_id);
-
-          if (added) {
-            favBtn.textContent = "❤️ Added to Favorites (click to remove)";
-            favBtn.classList.add("favorite-active");
-          } else {
-            favBtn.textContent = "🤍 Add to Favorites";
-            favBtn.classList.remove("favorite-active");
-          }
+          favBtn.textContent = added
+            ? "❤️ Added to Favorites (click to remove)"
+            : "🤍 Add to Favorites";
+          favBtn.classList.toggle("favorite-active");
         };
       })();
     </script>

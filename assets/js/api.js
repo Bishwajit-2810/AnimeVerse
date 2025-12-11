@@ -36,7 +36,9 @@ async function safeFetch(url, retries = 3) {
     }
 }
 
-/*    GENRES   */
+/* =====================
+      GENRES
+===================== */
 
 let _genreCache = null;
 
@@ -48,7 +50,9 @@ async function fetchGenres() {
     return _genreCache;
 }
 
-/*     ANIME DETAILS   */
+/* =====================
+   ANIME DETAILS (Main)
+===================== */
 
 async function fetchAnimeDetails(id) {
     return await safeFetch(`${API}/anime/${id}`) || {};
@@ -58,13 +62,17 @@ async function fetchAnimeBasic(id) {
     return await safeFetch(`${API}/anime/${id}`) || {};
 }
 
-/*    TOP LISTS   */
+/* =====================
+    TOP LISTS
+===================== */
 
 async function fetchTopBy(type = "bypopularity", page = 1) {
     return await safeFetch(`${API}/top/anime?page=${page}&filter=${type}`) || [];
 }
 
-/*  SEARCH  */
+/* =====================
+      SEARCH
+===================== */
 
 async function searchAnime(q) {
     if (!q.trim()) return [];
@@ -73,7 +81,9 @@ async function searchAnime(q) {
     ) || [];
 }
 
-/*    GENRE FILTERED ANIME   */
+/* ==============================
+   GENRE FILTERED ANIME LIST
+============================== */
 
 async function fetchAnimeByGenre(genreId, page = 1) {
     return await safeFetch(
@@ -81,16 +91,44 @@ async function fetchAnimeByGenre(genreId, page = 1) {
     ) || [];
 }
 
-/*    TRENDING (Popular)   */
+/* =====================
+     TRENDING
+===================== */
 
 async function fetchTrendingAnime(limit = 15) {
     const data = await safeFetch(`${API}/top/anime?filter=bypopularity`);
     return data ? data.slice(0, limit) : [];
 }
 
-/*    TOP RATED   */
+/* =====================
+    TOP-RATED
+===================== */
 
 async function fetchTopAnime(limit = 15) {
     const data = await safeFetch(`${API}/top/anime?filter=airing`);
     return data ? data.slice(0, limit) : [];
+}
+
+/* ======================================================
+   EXTRA ANIME DATA  
+   Characters / Staff / Recommendations / Themes (OST)
+======================================================*/
+
+async function fetchAnimeCharacters(id) {
+    return await safeFetch(`${API}/anime/${id}/characters`) || [];
+}
+
+async function fetchAnimeStaff(id) {
+    return await safeFetch(`${API}/anime/${id}/staff`) || [];
+}
+
+async function fetchAnimeRecommendations(id) {
+    return await safeFetch(`${API}/anime/${id}/recommendations`) || [];
+}
+
+async function fetchAnimeThemes(id) {
+    return await safeFetch(`${API}/anime/${id}/themes`) || {
+        openings: [],
+        endings: []
+    };
 }
