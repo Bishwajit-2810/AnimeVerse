@@ -16,19 +16,27 @@
         <!-- LEFT: BRAND + MOBILE MENU BUTTON -->
         <div style="display: flex; align-items: center; gap: 12px">
           <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
-          <div class="brand"><span class="logo"></span> AnimeVerse</div>
+
+          <!-- FIXED: BRAND NOW A CLICKABLE LINK -->
+          <a
+            href="index.html"
+            class="brand"
+            style="text-decoration: none; color: inherit"
+          >
+            <span class="logo"></span> AnimeVerse
+          </a>
         </div>
 
         <!-- NAV MENU -->
         <nav class="nav" id="main-nav" aria-label="Main navigation">
-          <a href="index.html">Home</a>
+          <a href="index.html" class="active">Home</a>
           <a href="trending.html">Trending</a>
-          <a href="genres.html" class="active">Genres</a>
+          <a href="genres.html">Genres</a>
           <a href="favorites.html">Favorites</a>
           <a href="about.html">About</a>
         </nav>
 
-        <!-- RIGHT: SEARCH & THEME -->
+        <!-- RIGHT: SEARCH + THEME -->
         <div style="display: flex; align-items: center; gap: 10px">
           <div class="search-wrap">
             <button
