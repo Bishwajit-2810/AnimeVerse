@@ -13,11 +13,9 @@
     <!-- HEADER -->
     <div class="header-wrap">
       <header class="header container">
-        <!-- LEFT: BRAND + MOBILE MENU BUTTON -->
         <div style="display: flex; align-items: center; gap: 12px">
           <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
 
-          <!-- FIXED: BRAND NOW A CLICKABLE LINK -->
           <a
             href="index.html"
             class="brand"
@@ -27,8 +25,7 @@
           </a>
         </div>
 
-        <!-- NAV MENU -->
-        <nav class="nav" id="main-nav" aria-label="Main navigation">
+        <nav class="nav" id="main-nav">
           <a href="index.html">Home</a>
           <a href="trending.html">Trending</a>
           <a href="genres.html">Genres</a>
@@ -36,30 +33,17 @@
           <a href="about.html">About</a>
         </nav>
 
-        <!-- RIGHT: SEARCH + THEME -->
         <div style="display: flex; align-items: center; gap: 10px">
           <div class="search-wrap">
-            <button
-              id="search-open"
-              class="search-toggle"
-              aria-label="Open search"
-            >
-              🔍
-            </button>
+            <button id="search-open" class="search-toggle">🔍</button>
             <input
               id="nav-search-input"
               class="search-input"
               type="search"
               placeholder="Search anime (press S)..."
             />
-            <button
-              id="voice-btn"
-              class="search-toggle"
-              aria-label="Voice search"
-            >
-              🎤
-            </button>
-            <div id="suggestions" class="suggestions" aria-hidden="true"></div>
+            <button id="voice-btn" class="search-toggle">🎤</button>
+            <div id="suggestions" class="suggestions"></div>
           </div>
 
           <div class="controls">
@@ -67,12 +51,6 @@
               id="theme-toggle"
               onclick="animeverseToggleTheme()"
               class="pill"
-              style="
-                background: transparent;
-                border: 1px solid rgba(255, 255, 255, 0.03);
-                padding: 8px;
-                border-radius: 10px;
-              "
             >
               🌓
             </button>
@@ -85,11 +63,27 @@
     <main class="page container">
       <h1>Your Favorites</h1>
 
+      <!-- NEW: Export / Import buttons -->
+      <div class="fav-actions" style="margin: 12px 0; display: flex; gap: 10px">
+        <button class="btn secondary" onclick="exportFavorites()">
+          ⬇️ Export JSON
+        </button>
+
+        <label class="btn secondary" style="cursor: pointer">
+          ⬆️ Import JSON
+          <input
+            type="file"
+            accept="application/json"
+            onchange="importFavorites(event)"
+            style="display: none"
+          />
+        </label>
+      </div>
+
       <div id="favorites-grid" class="card-grid" style="margin-top: 20px"></div>
       <div id="fav-msg" style="color: var(--muted); margin-top: 14px"></div>
     </main>
 
-    <!-- FOOTER -->
     <footer class="footer container">
       <p style="color: var(--muted)">© AnimeVerse</p>
     </footer>
@@ -100,13 +94,14 @@
     <script src="assets/js/app.js"></script>
 
     <script>
+      /* Hook into app.js */
+
       async function renderFavorites() {
         const grid = document.getElementById("favorites-grid");
         const msg = document.getElementById("fav-msg");
 
         const favs = getFavorites();
 
-        /* Empty state */
         if (!favs.length) {
           grid.innerHTML = "";
           msg.textContent = "No favorites added yet.";
@@ -115,7 +110,6 @@
 
         msg.textContent = "Loading your favorites…";
 
-        /* Fetch details for each ID */
         const details = await Promise.all(
           favs.map((id) => fetchAnimeBasic(id).catch(() => null))
         );
@@ -123,12 +117,10 @@
         const items = details.filter(Boolean);
         msg.textContent = "";
 
-        /* Render cards */
         grid.innerHTML = items
           .map(
             (it) => `
           <div class="fav-card">
-            
             <a href="anime.html?id=${it.mal_id}" class="fav-link">
               <img src="${it.images?.jpg?.image_url}" class="poster" />
               <div class="card-title">${esc(it.title)}</div>
@@ -144,14 +136,12 @@
           .join("");
       }
 
-      /* Remove & refresh */
       function removeFavorite(id) {
         const updated = getFavorites().filter((x) => x !== id);
         localStorage.setItem("favs", JSON.stringify(updated));
         renderFavorites();
       }
 
-      /* Initial load */
       renderFavorites();
     </script>
   </body>

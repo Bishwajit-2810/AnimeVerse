@@ -179,6 +179,85 @@ function isFavorite(id) {
 }
 
 /* ============================================================
+   FAVORITES SYSTEM (clean + import/export added)
+============================================================ */
+
+function getFavorites() {
+    return JSON.parse(localStorage.getItem("favs") || "[]");
+}
+
+function toggleFavorite(id) {
+    let favs = getFavorites();
+    const exists = favs.includes(id);
+
+    favs = exists ? favs.filter(x => x !== id) : [...favs, id];
+
+    localStorage.setItem("favs", JSON.stringify(favs));
+    return !exists;
+}
+
+function isFavorite(id) {
+    return getFavorites().includes(id);
+}
+
+/* ============================================================
+   EXPORT FAVORITES AS JSON
+============================================================ */
+
+function exportFavorites() {
+    const favs = getFavorites();
+    const data = JSON.stringify({ favorites: favs }, null, 2);
+
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "animeverse-favorites.json";
+    a.click();
+
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+}
+
+/* ============================================================
+   IMPORT FAVORITES JSON
+============================================================ */
+
+function importFavorites(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = e => {
+        try {
+            const json = JSON.parse(e.target.result);
+
+            if (!json.favorites || !Array.isArray(json.favorites)) {
+                alert("Invalid favorites file.");
+                return;
+            }
+
+            const existing = getFavorites();
+            const merged = Array.from(new Set([...existing, ...json.favorites]));
+
+            localStorage.setItem("favs", JSON.stringify(merged));
+
+            alert("Favorites imported successfully!");
+
+            if (typeof renderFavorites === "function") {
+                renderFavorites();
+            }
+
+        } catch (err) {
+            alert("Error reading JSON file.");
+        }
+    };
+
+    reader.readAsText(file);
+}
+
+/* ============================================================
    GRID RENDERER
 ============================================================ */
 
