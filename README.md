@@ -1,15 +1,3 @@
-Here comes your **fully upgraded, production-ready GitHub README.md**, now including:
-
-✔ Your new **PNG logo**
-✔ Correct **live demo link**
-✔ Proper **screenshot structure**
-✔ Beautiful formatting
-✔ All features, installation, tech stack, etc.
-✔ Clean, professional tone
-✔ Ready to paste into GitHub
-
----
-
 <p align="center">
   <img src="readme/logo.png" width="400" alt="AnimeVerse Logo">
 </p>
@@ -23,8 +11,6 @@ Browse trending anime, explore genres, search with live suggestions, manage favo
 ---
 
 # 📸 Screenshots
-
-> Add your actual screenshot files into a `/screenshots` folder in your repo, then update the filenames below.
 
 ### **Home Page**
 
