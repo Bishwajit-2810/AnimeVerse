@@ -25,7 +25,7 @@
         </div>
 
         <nav class="nav" id="main-nav">
-          <a href="index.html" class="active">Home</a>
+          <a href="index.html">Home</a>
           <a href="trending.html">Trending</a>
           <a href="genres.html">Genres</a>
           <a href="favorites.html">Favorites</a>
@@ -44,6 +44,7 @@
             <button id="voice-btn" class="search-toggle">🎤</button>
             <div id="suggestions" class="suggestions"></div>
           </div>
+
           <div class="controls">
             <button
               id="theme-toggle"
@@ -81,14 +82,12 @@
           return;
         }
 
-        /* Fetch core details */
         const data = await fetchAnimeDetails(id);
         if (!data) {
           root.innerHTML = "<p>Anime not found.</p>";
           return;
         }
 
-        /* Fetch extra sections */
         const [characters, staff, recommendations, themes] = await Promise.all([
           fetchAnimeCharacters(id),
           fetchAnimeStaff(id),
@@ -118,65 +117,70 @@
           `;
         }
 
-        /* ============================
-           MAIN DETAILS BLOCK
-        ============================ */
+        /* ===== TAB BAR ===== */
         root.innerHTML = `
-          <div class="anime-details-grid">
-            <div>
-              <img src="${poster}" class="poster-lg" />
-              <div class="details-buttons">
-                ${renderFavBtn()}
-                <a class="btn secondary" href="https://myanimelist.net/anime/${
-                  data.mal_id
-                }" target="_blank">
-                  View on MAL
-                </a>
+          <div class="anime-tabs">
+            <button class="anime-tab active" data-target="about-section">About</button>
+            <button class="anime-tab" data-target="themes-section">Themes</button>
+            <button class="anime-tab" data-target="char-section">Characters</button>
+            <button class="anime-tab" data-target="staff-section">Staff</button>
+            <button class="anime-tab" data-target="recommend-section">Recommendations</button>
+          </div>
+        `;
+
+        /* ABOUT */
+        root.innerHTML += `
+          <div id="about-section" class="tab-section active">
+            <div class="anime-details-grid">
+              <div>
+                <img src="${poster}" class="poster-lg" />
+                <div class="details-buttons">
+                  ${renderFavBtn()}
+                  <a class="btn secondary" href="https://myanimelist.net/anime/${
+                    data.mal_id
+                  }" target="_blank">View on MAL</a>
+                </div>
               </div>
-            </div>
 
-            <div class="anime-details-text">
-              <h1>${title}</h1>
+              <div class="anime-details-text">
+                <h1>${title}</h1>
 
-              <div class="meta-block">
-                ⭐ <b>${score}</b> • Episodes: ${episodes} • Type: ${
+                <div class="meta-block">
+                  ⭐ <b>${score}</b> • Episodes: ${episodes} • Type: ${
           data.type || "—"
         } • Status: ${data.status || "—"}
+                </div>
+
+                <div class="meta-list">
+                  <div><b>Japanese:</b> ${esc(data.title_japanese || "—")}</div>
+                  <div><b>English:</b> ${esc(data.title_english || "—")}</div>
+                  <div><b>Season:</b> ${
+                    data.season ? data.season + " " + data.year : "—"
+                  }</div>
+                  <div><b>Duration:</b> ${data.duration || "—"}</div>
+                  <div><b>Rating:</b> ${data.rating || "—"}</div>
+                  <div><b>Studios:</b> ${
+                    data.studios?.map((s) => esc(s.name)).join(", ") || "—"
+                  }</div>
+                </div>
+
+                <h3 style="margin-top:20px">Synopsis</h3>
+                <p style="color:var(--muted);line-height:1.6;margin-top:6px">${synopsis}</p>
+
+                ${
+                  data.trailer?.embed_url
+                    ? `<div class="trailer-box"><h3>Trailer</h3>
+                       <iframe src="${data.trailer.embed_url}" class="trailer-frame" allowfullscreen></iframe></div>`
+                    : ""
+                }
               </div>
-
-              <div class="meta-list">
-                <div><b>Japanese:</b> ${esc(data.title_japanese || "—")}</div>
-                <div><b>English:</b> ${esc(data.title_english || "—")}</div>
-                <div><b>Season:</b> ${
-                  data.season ? data.season + " " + data.year : "—"
-                }</div>
-                <div><b>Duration:</b> ${data.duration || "—"}</div>
-                <div><b>Rating:</b> ${data.rating || "—"}</div>
-                <div><b>Studios:</b> ${
-                  data.studios?.map((s) => esc(s.name)).join(", ") || "—"
-                }</div>
-              </div>
-
-              <h3 style="margin-top:20px">Synopsis</h3>
-              <p style="color:var(--muted);line-height:1.6;margin-top:6px">${synopsis}</p>
-
-              ${
-                data.trailer?.embed_url
-                  ? `<div class="trailer-box">
-                       <h3>Trailer</h3>
-                       <iframe src="${data.trailer.embed_url}" class="trailer-frame" allowfullscreen></iframe>
-                     </div>`
-                  : ""
-              }
             </div>
           </div>
         `;
 
-        /* ============================
-           CHARACTERS
-        ============================ */
+        /* CHARACTERS */
         root.innerHTML += `
-          <section class="section">
+          <section class="section tab-section" id="char-section">
             <h2>Characters</h2>
             <div class="card-grid">
               ${
@@ -184,18 +188,15 @@
                   ? characters
                       .map(
                         (c) => `
-                        <div class="card">
-                          <img class="poster" src="${
-                            c.character.images.jpg.image_url
-                          }" alt="${esc(c.character.name)}">
-                          <div class="card-body">
-                            <div class="card-title">${esc(
-                              c.character.name
-                            )}</div>
-                            <div class="card-meta">${c.role}</div>
-                          </div>
+                      <div class="card">
+                        <img class="poster" src="${
+                          c.character.images.jpg.image_url
+                        }">
+                        <div class="card-body">
+                          <div class="card-title">${esc(c.character.name)}</div>
+                          <div class="card-meta">${c.role}</div>
                         </div>
-                      `
+                      </div>`
                       )
                       .join("")
                   : "<p>No characters available.</p>"
@@ -204,11 +205,9 @@
           </section>
         `;
 
-        /* ============================
-           STAFF
-        ============================ */
+        /* STAFF */
         root.innerHTML += `
-          <section class="section">
+          <section class="section tab-section" id="staff-section">
             <h2>Staff</h2>
             <div class="card-grid">
               ${
@@ -217,55 +216,46 @@
                       .slice(0, 12)
                       .map(
                         (s) => `
-                        <div class="card">
-                          <img class="poster" src="${
-                            s.person.images.jpg.image_url
-                          }" alt="${esc(s.person.name)}">
-                          <div class="card-body">
-                            <div class="card-title">${esc(s.person.name)}</div>
-                            <div class="card-meta">${s.positions.join(
-                              ", "
-                            )}</div>
-                          </div>
+                      <div class="card">
+                        <img class="poster" src="${
+                          s.person.images.jpg.image_url
+                        }">
+                        <div class="card-body">
+                          <div class="card-title">${esc(s.person.name)}</div>
+                          <div class="card-meta">${s.positions.join(", ")}</div>
                         </div>
-                      `
+                      </div>`
                       )
                       .join("")
-                  : "<p>No staff information available.</p>"
+                  : "<p>No staff available.</p>"
               }
             </div>
           </section>
         `;
 
-        /* ============================
-           THEMES (OST)
-        ============================ */
+        /* THEMES */
         root.innerHTML += `
-          <section class="section">
+          <section class="section tab-section" id="themes-section">
             <h2>Theme Songs</h2>
             <div style="color:var(--muted)">
-              <b>Openings:</b><br>
-              ${
+              <b>Openings:</b><br>${
                 themes?.openings?.length
                   ? themes.openings.map((t) => "• " + esc(t)).join("<br>")
-                  : "No opening themes."
+                  : "None"
               }
               <br><br>
-              <b>Endings:</b><br>
-              ${
+              <b>Endings:</b><br>${
                 themes?.endings?.length
                   ? themes.endings.map((t) => "• " + esc(t)).join("<br>")
-                  : "No ending themes."
+                  : "None"
               }
             </div>
           </section>
         `;
 
-        /* ============================
-           RECOMMENDATIONS
-        ============================ */
+        /* RECOMMENDATIONS (LAST TAB) */
         root.innerHTML += `
-          <section class="section">
+          <section class="section tab-section" id="recommend-section">
             <h2>Recommended Anime</h2>
             <div class="card-grid">
               ${
@@ -274,15 +264,14 @@
                       .slice(0, 12)
                       .map(
                         (r) => `
-                        <a class="card" href="anime.html?id=${r.entry.mal_id}">
-                          <img class="poster" src="${
-                            r.entry.images.jpg.image_url
-                          }">
-                          <div class="card-body">
-                            <div class="card-title">${esc(r.entry.title)}</div>
-                          </div>
-                        </a>
-                      `
+                      <a class="card" href="anime.html?id=${r.entry.mal_id}">
+                        <img class="poster" src="${
+                          r.entry.images.jpg.image_url
+                        }">
+                        <div class="card-body"><div class="card-title">${esc(
+                          r.entry.title
+                        )}</div></div>
+                      </a>`
                       )
                       .join("")
                   : "<p>No recommendations available.</p>"
@@ -300,6 +289,21 @@
             : "🤍 Add to Favorites";
           favBtn.classList.toggle("favorite-active");
         };
+
+        /* TAB SWITCHING */
+        document.querySelectorAll(".anime-tab").forEach((btn) =>
+          btn.addEventListener("click", () => {
+            document
+              .querySelectorAll(".anime-tab")
+              .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            document
+              .querySelectorAll(".tab-section")
+              .forEach((s) => s.classList.remove("active"));
+            document.getElementById(btn.dataset.target).classList.add("active");
+          })
+        );
       })();
     </script>
   </body>

@@ -933,3 +933,84 @@ body {
     border-radius: 12px;
   }
 }
+
+/* TAB BAR */
+.anime-tabs {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.anime-tab {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.anime-tab.active {
+  background: var(--accent);
+  color: black;
+}
+
+.anime-tab:hover {
+  opacity: 0.8;
+}
+
+/* TAB SECTIONS */
+.tab-section {
+  display: none;
+}
+
+.tab-section.active {
+  display: block;
+}
+
+/* Mobile responsiveness for anime details */
+@media (max-width: 780px) {
+  .anime-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 22px !important;
+  }
+
+  .poster-lg {
+    width: 100%;
+    height: auto;
+  }
+
+  .anime-tabs {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .anime-tab {
+    flex: 1;
+    text-align: center;
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .anime-tab {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  .meta-list {
+    font-size: 14px;
+  }
+
+  .trailer-frame {
+    height: 200px !important;
+  }
+}
