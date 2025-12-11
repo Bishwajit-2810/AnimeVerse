@@ -13,11 +13,9 @@
     <!-- HEADER -->
     <div class="header-wrap">
       <header class="header container">
-        <!-- LEFT: BRAND + MOBILE MENU BUTTON -->
         <div style="display: flex; align-items: center; gap: 12px">
           <button id="mobile-nav-toggle" class="mobile-nav-toggle">☰</button>
 
-          <!-- FIXED: BRAND NOW A CLICKABLE LINK -->
           <a
             href="index.html"
             class="brand"
@@ -27,7 +25,6 @@
           </a>
         </div>
 
-        <!-- NAV MENU -->
         <nav class="nav" id="main-nav" aria-label="Main navigation">
           <a href="index.html" class="active">Home</a>
           <a href="trending.html">Trending</a>
@@ -36,30 +33,17 @@
           <a href="about.html">About</a>
         </nav>
 
-        <!-- RIGHT: SEARCH + THEME -->
         <div style="display: flex; align-items: center; gap: 10px">
           <div class="search-wrap">
-            <button
-              id="search-open"
-              class="search-toggle"
-              aria-label="Open search"
-            >
-              🔍
-            </button>
+            <button id="search-open" class="search-toggle">🔍</button>
             <input
               id="nav-search-input"
               class="search-input"
               type="search"
               placeholder="Search anime (press S)..."
             />
-            <button
-              id="voice-btn"
-              class="search-toggle"
-              aria-label="Voice search"
-            >
-              🎤
-            </button>
-            <div id="suggestions" class="suggestions" aria-hidden="true"></div>
+            <button id="voice-btn" class="search-toggle">🎤</button>
+            <div id="suggestions" class="suggestions"></div>
           </div>
 
           <div class="controls">
@@ -67,12 +51,6 @@
               id="theme-toggle"
               onclick="animeverseToggleTheme()"
               class="pill"
-              style="
-                background: transparent;
-                border: 1px solid rgba(255, 255, 255, 0.03);
-                padding: 8px;
-                border-radius: 10px;
-              "
             >
               🌓
             </button>
@@ -81,19 +59,56 @@
       </header>
     </div>
 
-    <!-- PAGE -->
-    <main class="page container">
-      <h1>Genres</h1>
-      <p style="color: var(--muted); margin-top: 6px; margin-bottom: 16px">
-        Tap any genre to explore related anime.
-      </p>
-      <div id="genres" class="card-grid"></div>
-    </main>
+    <!-- PAGE CONTENT WRAPPER (IMPORTANT FOR BLUR) -->
+    <div id="page-content">
+      <main class="page container">
+        <h1>Genres</h1>
 
-    <!-- FOOTER -->
-    <footer class="footer container">
-      <p style="color: var(--muted)">© AnimeVerse</p>
-    </footer>
+        <p style="color: var(--muted); margin-top: 6px; margin-bottom: 16px">
+          Tap any genre to explore related anime.
+        </p>
+
+        <div id="genres" class="card-grid"></div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="footer container">
+        <p style="color: var(--muted)">© AnimeVerse</p>
+      </footer>
+    </div>
+    <!-- /#page-content -->
+
+    <!-- AGE CONFIRMATION POPUP (hidden by default) -->
+    <div
+      id="adult-popup"
+      class="adult-popup hidden"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="adult-box" role="document" aria-label="Age confirmation">
+        <h2 style="margin: 0 0 8px">🔞 Adult Content</h2>
+
+        <p style="color: var(--muted); margin: 0 0 14px">
+          This genre includes adult or explicit material. Are you 18 years of
+          age or older?
+        </p>
+
+        <div class="remember-row">
+          <input type="checkbox" id="remember-choice" />
+          <span>Remember my choice</span>
+        </div>
+
+        <div class="adult-buttons">
+          <button id="adult-yes" class="btn primary" style="min-width: 120px">
+            Yes, I am 18+
+          </button>
+          <button id="adult-no" class="btn secondary" style="min-width: 120px">
+            No
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- SCRIPTS -->
     <script src="assets/js/api.js"></script>
@@ -101,9 +116,40 @@
     <script src="assets/js/app.js"></script>
 
     <script>
+      /* ------- ADULT GENRE GATING (works only if page-content exists, fallback to body) ------- */
+
+      const ADULT_GENRES = ["Hentai", "Erotica", "Ecchi", "Harem"];
+
+      const popup = document.getElementById("adult-popup");
+      const page = document.getElementById("page-content") || document.body;
+
+      let pendingGenreId = null;
+
+      function isAdultVerified() {
+        return localStorage.getItem("adult-ok") === "true";
+      }
+
+      function markAdultVerified() {
+        localStorage.setItem("adult-ok", "true");
+      }
+
+      /* -----------------------------
+     FIXED: safe popup hide handler
+     ----------------------------- */
+      function safeHidePopup() {
+        // remove focus BEFORE hiding to prevent aria-hidden error
+        if (document.activeElement) {
+          document.activeElement.blur();
+        }
+
+        popup.classList.add("hidden");
+        popup.setAttribute("aria-hidden", "true");
+        page.classList.remove("blur-active");
+        document.documentElement.style.overflow = "";
+      }
+
       (async () => {
         const out = document.getElementById("genres");
-
         try {
           out.innerHTML = `<div style="color:var(--muted);padding:20px">Loading…</div>`;
           const list = await fetchGenres();
@@ -114,28 +160,85 @@
           }
 
           out.innerHTML = list
-            .map(
-              (g) => `
-              <a class="card"
-                 href="trending.html?genre=${g.mal_id}"
-                 style="
-                    padding:16px;
-                    text-align:center;
-                    font-weight:700;
-                    display:flex;
-                    justify-content:center;
-                    align-items:center;
-                    height:90px;
-                 ">
-                ${esc(g.name)}
-              </a>`
-            )
+            .map((g) => {
+              const isAdult = ADULT_GENRES.includes(g.name);
+              return `
+            <a class="card genre-card"
+               data-genre-id="${g.mal_id}"
+               data-genre-name="${esc(g.name)}"
+               data-adult="${isAdult}"
+               href="#"
+               style="padding:16px;text-align:center;font-weight:700;display:flex;justify-content:center;align-items:center;height:90px">
+              ${esc(g.name)} ${isAdult ? "🔞" : ""}
+            </a>`;
+            })
             .join("");
         } catch (err) {
-          console.error(err);
+          console.error("Genres load error:", err);
           out.innerHTML = `<div style="color:var(--muted)">Error loading genres.</div>`;
         }
       })();
+
+      document.addEventListener("click", function (e) {
+        const card = e.target.closest(".genre-card");
+        if (!card) return;
+
+        e.preventDefault();
+
+        const id = card.dataset.genreId;
+        const isAdult = card.dataset.adult === "true";
+
+        if (!isAdult) {
+          location.href = `trending.html?genre=${id}`;
+          return;
+        }
+
+        if (isAdultVerified()) {
+          location.href = `trending.html?genre=${id}`;
+          return;
+        }
+
+        pendingGenreId = id;
+        showAdultPopup();
+      });
+
+      function showAdultPopup() {
+        popup.classList.remove("hidden");
+        popup.setAttribute("aria-hidden", "false");
+        page.classList.add("blur-active");
+        document.documentElement.style.overflow = "hidden";
+      }
+
+      /* -----------------------------
+     UPDATED: use safeHidePopup()
+     ----------------------------- */
+      document
+        .getElementById("adult-yes")
+        .addEventListener("click", function () {
+          if (document.getElementById("remember-choice").checked) {
+            markAdultVerified();
+          }
+
+          safeHidePopup();
+
+          if (pendingGenreId) {
+            location.href = `trending.html?genre=${pendingGenreId}`;
+          }
+        });
+
+      document
+        .getElementById("adult-no")
+        .addEventListener("click", function () {
+          safeHidePopup();
+          pendingGenreId = null;
+        });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !popup.classList.contains("hidden")) {
+          safeHidePopup();
+          pendingGenreId = null;
+        }
+      });
     </script>
   </body>
 </html>

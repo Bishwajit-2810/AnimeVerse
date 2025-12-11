@@ -861,3 +861,75 @@ body {
   line-height: 1.6;
   margin-top: 8px;
 }
+/* ---------------------------
+   Adult Content Confirmation
+----------------------------*/
+
+/* Blur the page content when popup shown */
+.blur-active {
+  filter: blur(6px) saturate(0.95);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Popup overlay */
+.adult-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.adult-box {
+  background: var(--surface);
+  padding: 22px;
+  border-radius: 16px;
+  width: 92%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-6px) scale(0.98);
+  animation: popIn 0.18s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes popIn {
+  from {
+    transform: translateY(-8px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.adult-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+}
+.hidden {
+  display: none;
+}
+
+/* small responsive tweak so popup isn't huge on tiny screens */
+@media (max-width: 420px) {
+  .adult-box {
+    padding: 18px;
+    border-radius: 12px;
+  }
+}
